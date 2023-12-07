@@ -19,8 +19,9 @@ def home():
     token_receive = request.cookies.get("mytoken")
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
-        user_info = db.users.find_one({"username": payload["id"]})
-        return render_template('account.html', user_info=user_info, active_page='account')
+        user_info = db.users.find_one({"username": payload["id"]},)
+        role = user_info.get('role', 'user')
+        return render_template('dashboard.html', user_info=user_info, active_page='dashboard', role=role)
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="Your token has expired"))
     except jwt.exceptions.DecodeError:
@@ -66,7 +67,14 @@ def sign_in():
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html', active_page='dashboard')
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]},)
+        role = user_info.get('role', 'user')
+        return render_template('dashboard.html', active_page='dashboard', role=role)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
 
 @app.route('/Acoount')
 def account():

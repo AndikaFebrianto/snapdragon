@@ -1,0 +1,74 @@
+{% extends 'nav.html' %}
+
+{% block tittle %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Dashboard</h1>
+</div>
+{% if role == 'superuser' %}
+<div class="page-content">
+    <section class="row">
+        <div class="col-12 col-lg-9">
+            <div class="row">
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body px-4 py-4-5">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div class="box-icon purple">
+                                        <i class="fa-solid fa-graduation-cap"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Dosen</h6>
+                                    <h6 class="font-extrabold mb-0">112.000</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body px-4 py-4-5">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div class="box-icon skyblue">
+                                        <i class="fa-solid fa-user-graduate"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Mahasiswa</h6>
+                                    <h6 class="font-extrabold mb-0">112.000</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body px-4 py-4-5">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div class="box-icon toska">
+                                        <i class="fa-solid fa-box-archive"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Mata Kuliah</h6>
+                                    <h6 class="font-extrabold mb-0">112.000</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endif %}
+
+{% endblock %}

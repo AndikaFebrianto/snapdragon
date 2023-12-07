@@ -1,0 +1,26 @@
+.box-icon {
+    display: flex;
+    padding: 30px;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    width: 48px;
+    border-radius: 10px; 
+}
+
+.box-icon.purple {
+    background-color: #9694ff;
+}
+
+.box-icon.toska {
+    background-color: #57caeb;
+}
+
+.box-icon.skyblue {
+    background-color: #5ddab4;
+}
+
+.box-icon i {
+    font-size: 24px;
+    color: #ffff;
+}
