@@ -1,0 +1,84 @@
+{% extends 'navdosen.html' %}
+
+{% block tittle %}
+Manajemen Kelas
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Edit Kelas</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <a href="/manajemen-kelas" class="btn btn-primary text-white">Kembali</a>
+
+    </div>
+    <div class="card-body">
+        <form class="form form-horizontal" action="/editkelas/{{ data._id }}" method="POST">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="edit-kdm">KDM</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="edit KDM"
+                                    id="edit-KDM" value="{{data.matkul}}" disabled>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-user-secret"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="edit-waktu">Waktu</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="Waktu Kelas" name="edit-waktu-matakuliah" id="edit-waktu" value="{{data.time}}">
+                                <div class="form-control-icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="edit-ruang">Ruang</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="Ruang kelas" name="edit-ruang-matakuliah" id="edit-ruang" value="{{data.room}}">
+                                <div class="form-control-icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="edit-dosen">Nama Dosen</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="edit dosen"
+                                    id="edit-KDM" value="{{data.username}}" disabled>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-user-secret"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-1 mb-1">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
