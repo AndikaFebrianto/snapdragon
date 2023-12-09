@@ -124,8 +124,6 @@ def savedosen():
 
 @app.route('/editdosen/<string:id>', methods=['GET', 'POST'])
 def editdosen(id):
-    token_receive = request.cookies.get("mytoken")
-    data = db.users.find_one({'_id': ObjectId(id)}, {'username':payload.get('id')})
     if request.method == 'POST':
         fname_receive = request.form['edit-nama-dosen']
         tl_receive = request.form['edit-brithday-dosen']
@@ -134,7 +132,10 @@ def editdosen(id):
         db.users.update_one({'_id': ObjectId(id)}, {'$set': {'full_name': fname_receive, 'tanggal_lahir': tl_receive, 'gender': gender_receive}})
         return redirect(url_for('mnjmdosen'))
     
+    token_receive = request.cookies.get("mytoken")
     try:
+        data = db.users.find_one({'_id': ObjectId(id)})
+
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
         selected_gender = data.get('gender', 'male')
@@ -159,7 +160,12 @@ def get_user_role():
 
 @app.route('/manajemen-mahasiswa')
 def mnjm_mhs():
-    return 'mahasiswa'
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))    
 
 @app.route('/Acoount')
 def account():
