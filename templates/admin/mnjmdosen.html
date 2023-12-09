@@ -1,0 +1,232 @@
+{% extends 'nav.html' %}
+
+{% block tittle %}
+Manajemen Dosen
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Manajemen Dosen</h1>
+</div>
+<section class="section">
+    <div class="row" id="table-bordered">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahdosen">
+                        Tambah
+                    </button>
+                </div>
+
+                <div class="card-content">
+                    <div class="card-body">
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code>dosen</code> yang tersedia.
+                        </p>
+                    </div>
+                    <div class="table-responsive mx-4 mb-4">
+                        <table class="table table-bordered table-striped table-dark mb-0">
+                            <thead>
+                                <tr>
+                                    <th>NIP</th>
+                                    <th>Nama</th>
+                                    <th>Jenis Kelamin</th>
+                                    <th>Tanggal Lahir</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in dosen %}
+                                <tr>
+                                    <td>{{user['username']}}</td>
+                                    <td>{{user['full_name']}}</td>
+                                    <td>{{user['gender']}}</td>
+                                    <td>{{user['tanggal_lahir']}}</td>
+                                    <td>
+                                        <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title="edit"></i></a>
+                                        <a href="/deletedosen/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="tambahdosen" data-bs-backdrop="static" data-bs-keyboard="false"
+tabindex="-1" aria-labelledby="tambahdosenLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="tambahdosenLabel">Tambah Dosen</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="NIP">NIP</label>
+                            <div class="d-flex">
+                                <input type="text" id="input-nip" class="form-control w-75"
+                                    name="input-nip" placeholder="NIP" readonly disabled>
+                                <a id="generate-nip" class="btn icon btn-warning mx-2"><i
+                                        class="fa-solid fa-rotate-right"
+                                        title="Generate"></i></a>
+                                <a id="check_nip" class="btn icon btn-info"><i
+                                        class="fa-solid fa-magnifying-glass"
+                                        title="check"></i></i></a>
+                            </div>
+                            <p id="help-nip-input" class="mt-2"></p>
+
+                        </div>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="form-group">
+                            <label for="fname">Nama</label>
+                            <input type="text" id="fname" class="form-control" name="fname"
+                                placeholder="Nama Panjang" required>
+                        </div>
+                        <p id="help-fname-input" class="mt-2"></p>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="form-group">
+                            <label for="tl">Tanggal Lahir</label>
+                            <input type="date" id="tl" name="tl"
+                                class="form-control mb-3 flatpickr-no-config"
+                                placeholder="Select date.." required>
+                        </div>
+                        <p id="help-tl-input" class="mt-2"></p>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender"
+                                    id="male" value="male" checked>
+                                <label class="form-check-label" for="male">
+                                    Laki-laki
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="gender"
+                                    id="female" value="female">
+                                <label class="form-check-label" for="female">
+                                    Perempuan
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-success me-1 mb-1"
+                            id="savedosen">Submit</button>
+                        <button type="button" class="btn btn-light-secondary me-1 mb-1"
+                            data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#input-nip').val('');
+        $('#fname').val('');
+        $('#tl').val('');
+
+        $('#generate-nip').click(function () {
+            var currentYear = new Date().getFullYear();
+            var lastTwoDigits = currentYear.toString().slice(-2);
+            var sequenceNumber = "01";
+            var randomNumbers = Math.floor(Math.random() * 9000) + 1000
+            $('#input-nip').val(lastTwoDigits + sequenceNumber + randomNumbers);
+        });
+        $('#check_nip').click(function () {
+            let nipDosen = $("#input-nip").val();
+            if (nipDosen === "") {
+                $("#help-nip-input")
+                    .text("Enter in your id")
+                    .removeClass("text-success")
+                    .addClass("text-danger");
+                $("#input-username").focus();
+                return;
+            }
+            $("#help-nip-input").text('');
+            $("#help-nip-input").removeClass('text-danger');
+            $.ajax({
+                type: "POST",
+                url: "/manajemen-dosen/checknip",
+                data: {
+                    nip_give: nipDosen
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response["exists"]) {
+                        $("#help-nip-input")
+                            .text("This nip is already in use.")
+                            .addClass("text-danger");
+                    } else {
+                        $("#help-nip-input")
+                            .text("This nip is available!")
+                            .removeClass("text-danger")
+                            .addClass("text-success");
+                    }
+                }
+            });
+        });
+        $('#savedosen').click(function () {
+            let nip = $("#input-nip").val();
+            let fname = $("#fname").val();
+            let tl = $("#tl").val();
+            let gender = $('input[name="gender"]:checked').val();
+
+            if ($("#help-nip-input").hasClass("text-danger")) {
+                alert("Please check your nip");
+                return;
+            } else if (!$("#help-nip-input").hasClass("text-success")) {
+                alert("Please double check your nip");
+                return;
+            }
+
+            if (fname === '') {
+                $("#help-fname-input")
+                    .text("Please enter your name")
+                    .addClass("text-danger");
+                return;
+            }
+            $("#help-fname-input").text('');
+            $("#help-fname-input").removeClass('text-danger');
+            if (tl === '') {
+                $("#help-tl-input")
+                    .text("Please enter your brithday")
+                    .addClass("text-danger");
+                return;
+            }
+            $("#help-tl-input").text('');
+            $("#help-tl-input").removeClass('text-danger');
+
+            $.ajax({
+                type: "POST",
+                url: "/manajemen-dosen/savedosen",
+                data: {
+                    nip: nip,
+                    fname: fname,
+                    tl: tl,
+                    gender: gender,
+                },
+                success: function (response) {
+                    alert("Nice!");
+                    window.location.replace("/manajemen-dosen");
+                }
+            });
+        });
+
+    });
+</script>
+
+{% endblock %}
