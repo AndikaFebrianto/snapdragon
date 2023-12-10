@@ -20,7 +20,8 @@ Manajemen Mahasiswa
 
                 <div class="card-content">
                     <div class="card-body">
-                        <p class="card-text">Harap tambahkan informasi mengenai data <code>Mahasiswa</code> yang tersedia.
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code>Mahasiswa</code> yang
+                            tersedia.
                         </p>
                     </div>
                     <div class="table-responsive mx-4 mb-4">
@@ -31,19 +32,25 @@ Manajemen Mahasiswa
                                     <th>Nama</th>
                                     <th>Jenis Kelamin</th>
                                     <th>Tanggal Lahir</th>
+                                    <th>Id</th>
+                                    <th>Orang Tua</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for user in dosen %}
+                                {% for user in semua_mhs %}
                                 <tr>
                                     <td>{{user['username']}}</td>
                                     <td>{{user['full_name']}}</td>
                                     <td>{{user['gender']}}</td>
                                     <td>{{user['tanggal_lahir']}}</td>
+                                    <td>{{user['id_ortu']}}</td>
+                                    <td>{{user['fname_ortu']}}</td>
                                     <td>
-                                        <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title="edit"></i></a>
-                                        <a href="/deletedosen/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
+                                        <a href="editmhs/{{ user._id }}" class="btn icon btn-info"><i
+                                                class="fa-solid fa-pen-to-square text-white" title="edit"></i></a>
+                                        <a href="/deletemhs/{{user._id}}" class="btn icon btn-danger"><i
+                                                class="fa-solid fa-trash" title="Hapus"></i></a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -56,176 +63,206 @@ Manajemen Mahasiswa
     </div>
 </section>
 
-<div class="modal fade" id="tambahmhs" data-bs-backdrop="static" data-bs-keyboard="false"
-tabindex="-1" aria-labelledby="tambahmsh" aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h1 class="modal-title fs-5" id="tambahmsh">Tambah Dosen</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label for="NIM">NIM</label>
-                            <div class="d-flex">
-                                <input type="text" id="input-nim" class="form-control w-75"
-                                    name="input-nim" placeholder="NIM" readonly disabled>
-                                <a id="generate-nim" class="btn icon btn-warning mx-2"><i
-                                        class="fa-solid fa-rotate-right"
-                                        title="Generate"></i></a>
-                                <a id="check_nim" class="btn icon btn-info"><i
-                                        class="fa-solid fa-magnifying-glass"
-                                        title="check"></i></i></a>
-                            </div>
-                            <p id="help-nim-input" class="mt-2"></p>
+<div class="modal fade" id="tambahmhs" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="tambahmsh" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="tambahmsh">Tambah Dosen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="NIM">NIM</label>
+                                <div class="d-flex">
+                                    <input type="text" id="input-nim" class="form-control w-75" name="input-nim"
+                                        placeholder="NIM" readonly disabled>
+                                    <a id="generate-nim" class="btn icon btn-warning mx-2"><i
+                                            class="fa-solid fa-rotate-right" title="Generate"></i></a>
+                                    <a id="check_nim" class="btn icon btn-info"><i class="fa-solid fa-magnifying-glass"
+                                            title="check"></i></i></a>
+                                </div>
+                                <p id="help-nim-input" class="mt-2"></p>
 
-                        </div>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="form-group">
-                            <label for="fnamemhs">Nama</label>
-                            <input type="text" id="fnamemsh" class="form-control" name="fnamemhs"
-                                placeholder="Nama Panjang" required>
-                        </div>
-                        <p id="help-fnamemhs-input" class="mt-2"></p>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="form-group">
-                            <label for="tlmhs">Tanggal Lahir</label>
-                            <input type="date" id="tlmhs" name="tlmhs"
-                                class="form-control mb-3 flatpickr-no-config"
-                                placeholder="Select date.." required>
-                        </div>
-                        <p id="help-tlmhs-input" class="mt-2"></p>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gendermhs"
-                                    id="male" value="male" checked>
-                                <label class="form-check-label" for="male">
-                                    Laki-laki
-                                </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gendermhs"
-                                    id="female" value="female">
-                                <label class="form-check-label" for="female">
-                                    Perempuan
-                                </label>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12 d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-success me-1 mb-1"
-                            id="savemhs">Submit</button>
-                        <button type="button" class="btn btn-light-secondary me-1 mb-1"
-                            data-bs-dismiss="modal">Close</button>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="fnamemhs">Nama</label>
+                                <input type="text" id="fnamemhs" class="form-control" name="fnamemhs"
+                                    placeholder="Nama Panjang" required>
+                            </div>
+                            <p id="help-fnamemhs-input" class="mt-2"></p>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="tlmhs">Tanggal Lahir</label>
+                                <input type="date" id="tlmhs" name="tlmhs" class="form-control mb-3 flatpickr-no-config"
+                                    placeholder="Select date.." required>
+                            </div>
+                            <p id="help-tlmhs-input" class="mt-2"></p>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="genermhs">Jenis Kelamin</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gendermhs" id="male"
+                                        value="male" checked>
+                                    <label class="form-check-label" for="male">
+                                        Laki-laki
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gendermhs" id="female"
+                                        value="female">
+                                    <label class="form-check-label" for="female">
+                                        Perempuan
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="ID">ID</label>
+                                    <div class="d-flex">
+                                        <input type="text" id="input-idortu" class="form-control" name="input-idortu"
+                                            placeholder="ID" readonly disabled>
+                                    </div>
+                                    <p id="help-idortu-input" class="mt-2"></p>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <div class="form-group">
+                                    <label for="fnamemhsortu">Nama</label>
+                                    <input type="text" id="fnamemhsortu" class="form-control" name="fnamemhsortu"
+                                        placeholder="Nama Orang Tua" required>
+                                </div>
+                                <p id="help-fnamemhs-input" class="mt-2"></p>
+                            </div>
+                            <div class="col-12 d-flex justify-content-end mt-4">
+                                <button type="submit" class="btn btn-success me-1 mb-1" id="savemhs">Submit</button>
+                                <button type="button" class="btn btn-light-secondary me-1 mb-1"
+                                    data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-</div>
 
-<script>
-    $(document).ready(function () {
-        $('#input-nim').val('');
-        $('#fnamemhs').val('');
-        $('#tlmhs').val('');
+    <script>
+        $(document).ready(function () {
+            $('#input-nim').val('');
+            $('#input-idortu').val('');
+            $('#fnamemhs').val('');
+            $('#tlmhs').val('');
 
-        $('#generate-nim').click(function () {
-            var currentYear = new Date().getFullYear();
-            var lastTwoDigits = currentYear.toString().slice(-2);
-            var sequenceNumber = "74";
-            var randomNumbers = Math.floor(Math.random() * 9000) + 1000
-            $('#input-nim').val(lastTwoDigits + sequenceNumber + randomNumbers);
-        });
-        $('#check_nim').click(function () {
-            let nimMhs = $("#input-nim").val();
-            if (nimMhs === "") {
-                $("#help-nim-input")
-                    .text("Enter in your nim")
+            $('#generate-nim').click(function () {
+                var digitsMhs = "10";
+                var currentYear = new Date().getFullYear();
+                var lastTwoDigits = currentYear.toString().slice(-2);
+                var sequenceNumber = "74";
+                var randomNumbers = Math.floor(Math.random() * 9000) + 1000
+                $('#input-nim').val(digitsMhs + lastTwoDigits + sequenceNumber + randomNumbers);
+                $('#input-idortu').val(digitsMhs + lastTwoDigits + sequenceNumber + randomNumbers + "01");
+            });
+            $('#check_nim').click(function () {
+                let nimMhs = $("#input-nim").val();
+                let idOrtu = $("#input-idortu").val();
+                if (nimMhs === "") {
+                    $("#help-nim-input")
+                        .text("Enter in your nim")
+                        .removeClass("text-success")
+                        .addClass("text-danger");
+                $("#help-idortu-input")
+                    .text("Enter in your id")
                     .removeClass("text-success")
                     .addClass("text-danger");
-                return;
-            }
-            $("#help-nim-input").text('');
-            $("#help-nim-input").removeClass('text-danger');
-            $.ajax({
-                type: "POST",
-                url: "/manajemen-mahasiswa/checknim",
-                data: {
-                    nim_give: nimMhs
-                },
-                success: function (response) {
-                    console.log(response);
-                    if (response["exists"]) {
-                        $("#help-nim-input")
-                            .text("This nim is already in use.")
-                            .addClass("text-danger");
-                    } else {
-                        $("#help-nim-input")
-                            .text("This nim is available!")
-                            .removeClass("text-danger")
-                            .addClass("text-success");
+                    return;
+                }
+                $("#help-nim-input").text('');
+                $("#help-nim-input").removeClass('text-danger');
+                $("#help-idortu-input").text('');
+                $("#help-idortu-input").removeClass('text-danger');
+                $.ajax({
+                    type: "POST",
+                    url: "/manajemen-mahasiswa/checknim",
+                    data: {
+                        nim_give: nimMhs
+                    },
+                    success: function (response) {
+                        if (response["exists"]) {
+                            $("#help-nim-input")
+                                .text("This nim is already in use.")
+                                .addClass("text-danger");
+                        } else {
+                            $("#help-nim-input")
+                                .text("This nim is available!")
+                                .removeClass("text-danger")
+                                .addClass("text-success");
+                        }
                     }
-                }
+                });
             });
-        });
-        $('#savedosen').click(function () {
-            let nip = $("#input-nip").val();
-            let fname = $("#fname").val();
-            let tl = $("#tl").val();
-            let gender = $('input[name="gender"]:checked').val();
 
-            if ($("#help-nip-input").hasClass("text-danger")) {
-                alert("Please check your nip");
-                return;
-            } else if (!$("#help-nip-input").hasClass("text-success")) {
-                alert("Please double check your nip");
-                return;
-            }
+            $('#savemhs').click(function () {
+                let nim = $("#input-nim").val();
+                let fnamemhs = $("#fnamemhs").val();
+                let tlmhs = $("#tlmhs").val();
+                let gendermhs = $('input[name="gendermhs"]:checked').val();
+                let idOrtu = $("#input-idortu").val();
+                let fnamemhsortu = $("#fnamemhsortu").val();
 
-            if (fname === '') {
-                $("#help-fname-input")
-                    .text("Please enter your name")
-                    .addClass("text-danger");
-                return;
-            }
-            $("#help-fname-input").text('');
-            $("#help-fname-input").removeClass('text-danger');
-            if (tl === '') {
-                $("#help-tl-input")
-                    .text("Please enter your brithday")
-                    .addClass("text-danger");
-                return;
-            }
-            $("#help-tl-input").text('');
-            $("#help-tl-input").removeClass('text-danger');
 
-            $.ajax({
-                type: "POST",
-                url: "/manajemen-dosen/savedosen",
-                data: {
-                    nip: nip,
-                    fname: fname,
-                    tl: tl,
-                    gender: gender,
-                },
-                success: function (response) {
-                    alert("Nice!");
-                    window.location.replace("/manajemen-dosen");
+                if ($("#help-nim-input").hasClass("text-danger")) {
+                    alert("Please check your nim");
+                    return;
+                } else if (!$("#help-nim-input").hasClass("text-success")) {
+                    alert("Please double check your nim");
+                    return;
                 }
+
+                if (fnamemhs === '') {
+                    $("#help-fnamemhs-input")
+                        .text("Please enter your name")
+                        .addClass("text-danger");
+                    return;
+                }
+                $("#help-fnamemhs-input").text('');
+                $("#help-fnamemhs-input").removeClass('text-danger');
+                if (tlmhs === '') {
+                    $("#help-tlmhs-input")
+                        .text("Please enter your brithday")
+                        .addClass("text-danger");
+                    return;
+                }
+                $("#help-tlmhs-input").text('');
+                $("#help-tlmhs-input").removeClass('text-danger');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/manajemen-mahasiswa/savemhs",
+                    data: {
+                        nim: nim,
+                        fnamemhs: fnamemhs,
+                        tlmhs: tlmhs,
+                        gendermhs: gendermhs,
+                        idOrtu: idOrtu,
+                        fnamemhsortu: fnamemhsortu,
+                    },
+                    success: function (response) {
+                        alert("Nice!");
+                        window.location.replace("/manajemen-mahasiswa");
+                    }
+                });
             });
+
         });
+    </script>
 
-    });
-</script>
-
-{% endblock %}
+    {% endblock %}
