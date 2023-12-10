@@ -1,0 +1,176 @@
+{% extends 'navdosen.html' %}
+
+{% block tittle %}
+Manajemen Kelas
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Manajemen Kelas</h1>
+</div>
+<section class="section">
+    <div class="row" id="table-bordered">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahkelas">
+                        Tambah
+                    </button>
+                </div>
+
+                <div class="card-content">
+                    <div class="card-body">
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code>mata kuliah</code> yang tersedia.
+                        </p>
+                    </div>
+                    <div class="table-responsive mx-4 mb-4">
+                        <table class="table table-bordered table-striped table-dark mb-0">
+                            <thead>
+                                <tr>
+                                    <th>KDM</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Waktu</th>
+                                    <th>Ruang</th>
+                                    <th>Nama Dosen</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in dosen %}
+                                <tr>
+                                    <td>{{user['matkul']}}</td>
+                                    <td>{{user['name_matkul']}}</td>
+                                    <td>{{user['time']}}</td>
+                                    <td>{{user['room']}}</td>
+                                    <td>{{user['username']}}</td>
+
+                                    <td>
+                                        <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
+                                        <a href="/deletedosen/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="tambahkelas" data-bs-backdrop="static" data-bs-keyboard="false"
+tabindex="-1" aria-labelledby="tambahkelasLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="tambahdosenLabel">Tambah kelas</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="KDM">KDM</label>
+                            <div class="form-floating">
+                                <select class="form-select" id="select-matkul" aria-label="Floating label select example">
+                                  <option selected>Pilih KDM matakuliah</option>
+                                  <option value="1">One</option>
+                                  <option value="2">Two</option>
+                                  <option value="3">Three</option>
+                                </select>
+                            </div>
+                            <p id="help-kdm-input" class="mt-2"></p>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="form-group">
+                            <label for="ftime">Waktu</label>
+                            <input type="text" id="ftime" class="form-control" name="ftime"
+                                placeholder="Waktu" required>
+                        </div>
+                        <p id="help-ftime-input" class="mt-2"></p>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="form-group">
+                            <label for="fruang">Ruang</label>
+                            <input type="text" id="fruang" class="form-control" name="fruang"
+                                placeholder="ruang" required>
+                        </div>
+                        <p id="help-fruang-input" class="mt-2"></p>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="form-group">
+                            <label for="dosen">Nama Dosen</label>
+                            <div class="form-floating">
+                                <select class="form-select" id="select-dosen" aria-label="Floating label select example">
+                                  <option selected>Pilih id dosen</option>
+                                  <option value="1">One</option>
+                                  <option value="2">Two</option>
+                                  <option value="3">Three</option>
+                                </select>
+                            </div>
+                            <p id="help-dosen-input" class="mt-2"></p>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-success me-1 mb-1"
+                            id="savedosen">Submit</button>
+                        <button type="button" class="btn btn-light-secondary me-1 mb-1"
+                            data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#select-matkul').val('');
+        $('#ftime').val('');
+        $('#fruang').val('');
+        $('#select-dosen').val('');
+
+        $('#savekelas').click(function () {
+            let kdm = $("#select-matkul").val();
+            let ftime = $("#ftime").val();
+            let fruang = $("#fruang").val();
+            let dosen = $("select-dosen").val();
+
+            if (ftime === '') {
+                $("#help-ftime-input")
+                    .text("Please enter your name")
+                    .addClass("text-danger");
+                return;
+            }
+            if (ftime === '') {
+                $("#help-fname-input")
+                    .text("Please enter your name")
+                    .addClass("text-danger");
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "/manajemen-kelas/savekelas",
+                data: {
+                    kdm: kdm,
+                    ftime: ftime,
+                    fruang: fruang,
+                    dosen: dosen,
+                },
+                success: function (response) {
+                    alert("Nice!");
+                    window.location.replace("/manajemen-kelas");
+                }
+            });
+        });
+
+    });
+</script>
+
+{% endblock %}

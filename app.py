@@ -173,6 +173,73 @@ def mnjm_mhs():
 def account():
     return render_template('account.html', active_page='account')
 
+@app.route('/manajemen-kelas')
+def mnjmkelas():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"matkul": payload["id"]})
+        if user_info and user_info.get('role') in ['superuser']:
+            semua_dosen = db.users.find({'role': 'kelas'})
+            return render_template("dosen/mnjmkelas.html", kelas=semua_kelas, active_page="mnjm_kls", user_info=user_info)
+        else:
+            return redirect(url_for("home"))
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+    
+@app.route('/manajemen-kelas/savekelas', methods=['POST'])
+def savedosen():
+    kdm_receive = request.form['kdm']
+    password_receive = 'Dosen@123'
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    ftime_receive = request.form['ftime']
+    fruang_receive = request.form['fruang']
+    dosen_receive = request.form['dosen']
+
+    doc = {
+        "matkul": kdm_receive,
+        "password": password_hash,
+        "role": "dosen",
+        "time": ftime_receive,
+        "room": fruang_receive,
+        "dosen": dosen_receive,
+    }
+    db.users.insert_one(doc)
+    return jsonify({'result': 'success'})
+
+@app.route('/editkelas/<string:id>', methods=['GET', 'POST'])
+def editdosen(id):
+    token_receive = request.cookies.get("mytoken")
+    data = db.users.find_one({'_id': ObjectId(id)}, {'matkul':payload.get('id')})
+    if request.method == 'POST':
+        ftime_receive = request.form['edit-waktu-matakuliah']
+        fruang_receive = request.form['edit-ruang-matakuliah']
+
+        db.users.update_one({'_id': ObjectId(id)}, {'$set': {'time': ftime_receive, 'room': fruang_receive}})
+        return redirect(url_for('mnjmkelas'))
+    
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'matkul':payload.get('id')})
+        return render_template('dosen/editkelas.html', data=data, active_page="mnjm_kelas", user_info=user_info)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/deletekelas/<string:id>')
+def delete(id):
+    db.users.delete_one({'_id': ObjectId(id)})
+    return redirect(url_for('mnjmkelas'))
+
+def get_user_role():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]})
+        role = user_info.get('role')
+        return role
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
 @app.context_processor
 def inject_role():
     return {'user_role': get_user_role()}
