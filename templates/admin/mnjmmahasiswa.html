@@ -70,49 +70,49 @@ tabindex="-1" aria-labelledby="tambahmsh" aria-hidden="true">
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
-                            <label for="NIP">NIM</label>
+                            <label for="NIM">NIM</label>
                             <div class="d-flex">
-                                <input type="text" id="input-nip" class="form-control w-75"
+                                <input type="text" id="input-nim" class="form-control w-75"
                                     name="input-nim" placeholder="NIM" readonly disabled>
                                 <a id="generate-nim" class="btn icon btn-warning mx-2"><i
                                         class="fa-solid fa-rotate-right"
                                         title="Generate"></i></a>
-                                <a id="check_nip" class="btn icon btn-info"><i
+                                <a id="check_nim" class="btn icon btn-info"><i
                                         class="fa-solid fa-magnifying-glass"
                                         title="check"></i></i></a>
                             </div>
-                            <p id="help-nip-input" class="mt-2"></p>
+                            <p id="help-nim-input" class="mt-2"></p>
 
                         </div>
                     </div>
                     <div class="col-12 mb-2">
                         <div class="form-group">
-                            <label for="fname">Nama</label>
-                            <input type="text" id="fnamemsh" class="form-control" name="fnamemsh"
+                            <label for="fnamemhs">Nama</label>
+                            <input type="text" id="fnamemsh" class="form-control" name="fnamemhs"
                                 placeholder="Nama Panjang" required>
                         </div>
-                        <p id="help-fname-input" class="mt-2"></p>
+                        <p id="help-fnamemhs-input" class="mt-2"></p>
                     </div>
                     <div class="col-12 mb-2">
                         <div class="form-group">
-                            <label for="tl">Tanggal Lahir</label>
-                            <input type="date" id="tl" name="tl"
+                            <label for="tlmhs">Tanggal Lahir</label>
+                            <input type="date" id="tlmhs" name="tlmhs"
                                 class="form-control mb-3 flatpickr-no-config"
                                 placeholder="Select date.." required>
                         </div>
-                        <p id="help-tl-input" class="mt-2"></p>
+                        <p id="help-tlmhs-input" class="mt-2"></p>
                     </div>
                     <div class="col-12 mb-2">
                         <div class="form-group">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender"
+                                <input class="form-check-input" type="radio" name="gendermhs"
                                     id="male" value="male" checked>
                                 <label class="form-check-label" for="male">
                                     Laki-laki
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="gender"
+                                <input class="form-check-input" type="radio" name="gendermhs"
                                     id="female" value="female">
                                 <label class="form-check-label" for="female">
                                     Perempuan
@@ -122,7 +122,7 @@ tabindex="-1" aria-labelledby="tambahmsh" aria-hidden="true">
                     </div>
                     <div class="col-12 d-flex justify-content-end mt-4">
                         <button type="submit" class="btn btn-success me-1 mb-1"
-                            id="savedosen">Submit</button>
+                            id="savemhs">Submit</button>
                         <button type="button" class="btn btn-light-secondary me-1 mb-1"
                             data-bs-dismiss="modal">Close</button>
                     </div>
@@ -135,44 +135,43 @@ tabindex="-1" aria-labelledby="tambahmsh" aria-hidden="true">
 
 <script>
     $(document).ready(function () {
-        $('#input-nip').val('');
-        $('#fname').val('');
-        $('#tl').val('');
+        $('#input-nim').val('');
+        $('#fnamemhs').val('');
+        $('#tlmhs').val('');
 
-        $('#generate-nip').click(function () {
+        $('#generate-nim').click(function () {
             var currentYear = new Date().getFullYear();
             var lastTwoDigits = currentYear.toString().slice(-2);
-            var sequenceNumber = "01";
+            var sequenceNumber = "74";
             var randomNumbers = Math.floor(Math.random() * 9000) + 1000
-            $('#input-nip').val(lastTwoDigits + sequenceNumber + randomNumbers);
+            $('#input-nim').val(lastTwoDigits + sequenceNumber + randomNumbers);
         });
-        $('#check_nip').click(function () {
-            let nipDosen = $("#input-nip").val();
-            if (nipDosen === "") {
-                $("#help-nip-input")
-                    .text("Enter in your id")
+        $('#check_nim').click(function () {
+            let nimMhs = $("#input-nim").val();
+            if (nimMhs === "") {
+                $("#help-nim-input")
+                    .text("Enter in your nim")
                     .removeClass("text-success")
                     .addClass("text-danger");
-                $("#input-username").focus();
                 return;
             }
-            $("#help-nip-input").text('');
-            $("#help-nip-input").removeClass('text-danger');
+            $("#help-nim-input").text('');
+            $("#help-nim-input").removeClass('text-danger');
             $.ajax({
                 type: "POST",
-                url: "/manajemen-dosen/checknip",
+                url: "/manajemen-mahasiswa/checknim",
                 data: {
-                    nip_give: nipDosen
+                    nim_give: nimMhs
                 },
                 success: function (response) {
                     console.log(response);
                     if (response["exists"]) {
-                        $("#help-nip-input")
-                            .text("This nip is already in use.")
+                        $("#help-nim-input")
+                            .text("This nim is already in use.")
                             .addClass("text-danger");
                     } else {
-                        $("#help-nip-input")
-                            .text("This nip is available!")
+                        $("#help-nim-input")
+                            .text("This nim is available!")
                             .removeClass("text-danger")
                             .addClass("text-success");
                     }
