@@ -164,6 +164,8 @@ def mnjm_mhs():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
+        semua_msh = db.users.find({'role': 'mahasiswa'})
+        return render_template("admin/mnjmmahasiswa.html", active_page="mnjm_mhs", user_info=user_info, semua_msh=semua_msh)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))    
 
