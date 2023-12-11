@@ -42,7 +42,7 @@ Manajemen Dosen
                                     <td>{{user['gender']}}</td>
                                     <td>{{user['tanggal_lahir']}}</td>
                                     <td>
-                                        <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
+                                        <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white " title="edit"></i></a>
                                         <a href="/deletedosen/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
                                     </td>
                                 </tr>
@@ -104,6 +104,7 @@ tabindex="-1" aria-labelledby="tambahdosenLabel" aria-hidden="true">
                     </div>
                     <div class="col-12 mb-2">
                         <div class="form-group">
+                            <label for="genermhs">Jenis Kelamin</label>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="gender"
                                     id="male" value="male" checked>
@@ -150,10 +151,9 @@ tabindex="-1" aria-labelledby="tambahdosenLabel" aria-hidden="true">
             let nipDosen = $("#input-nip").val();
             if (nipDosen === "") {
                 $("#help-nip-input")
-                    .text("Enter in your id")
+                    .text("Enter in your nip")
                     .removeClass("text-success")
                     .addClass("text-danger");
-                $("#input-username").focus();
                 return;
             }
             $("#help-nip-input").text('');
@@ -165,7 +165,6 @@ tabindex="-1" aria-labelledby="tambahdosenLabel" aria-hidden="true">
                     nip_give: nipDosen
                 },
                 success: function (response) {
-                    console.log(response);
                     if (response["exists"]) {
                         $("#help-nip-input")
                             .text("This nip is already in use.")

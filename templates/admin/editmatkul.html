@@ -1,0 +1,74 @@
+{% extends 'nav.html' %}
+
+{% block tittle %}
+Manajemen Mahasiswa
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Edit Mahasiswa</h1>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <a href="/manajemen-matakuliah" class="btn btn-primary text-white">Kembali</a>
+
+    </div>
+    <div class="card-body">
+        <form class="form form-horizontal" action="/editmatkul/{{ data._id }}" method="POST">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="edit-kdm">KDM</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="KDM"
+                                    id="edit-kdm" value="{{data.Kode_Matkul}}" disabled>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-user-secret"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="edit-namamatkul">Nama</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="Nama Mata Kuliah" name="edit-nama-matkul" id="edit-namamatkul" value="{{data.Nama_Matkul}}" required>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="jurusan">Jurusan</label>
+                    </div>
+                    <div class="col-12 mb-2">
+                        <div class="form-group">
+                            <select class="form-select" name="editpilihjurusan" id="editpilihjurusan" required>
+                                <option selected>Pilih Jurusan</option>
+                                <option value="Sistem Informasi">Sistem Informasi</option>
+                                <option value="Teknik Komputer">Teknik Komputer</option>
+                                <option value="Teknik Informatika">Teknik Informatika</option>
+                              </select>
+                        </div>
+                    </div>  
+                    <div class="col-12 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success me-1 mb-1">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    let pilihjurusan = $("#editpilihjurusan").val('{{selected_major}}');
+</script>
+{% endblock %}

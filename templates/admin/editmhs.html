@@ -1,21 +1,21 @@
 {% extends 'nav.html' %}
 
 {% block tittle %}
-Manajemen Dosen
+Manajemen Mahasiswa
 {% endblock %}
 
 {% block content %}
 <div class="page-heading">
-    <h1>Edit Dosen</h1>
+    <h1>Edit Mahasiswa</h1>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <a href="/manajemen-dosen" class="btn btn-primary text-white">Kembali</a>
+        <a href="/manajemen-mahasiswa" class="btn btn-primary text-white">Kembali</a>
 
     </div>
     <div class="card-body">
-        <form class="form form-horizontal" action="/editdosen/{{ data._id }}" method="POST">
+        <form class="form form-horizontal" action="/editmhs/{{ data._id }}" method="POST">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-4">
@@ -38,7 +38,7 @@ Manajemen Dosen
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Nama" name="edit-nama-dosen" id="edit-nama" value="{{data.full_name}}" required>
+                                <input type="text" class="form-control" placeholder="Nama" name="edit-nama-mhs" id="edit-nama" value="{{data.full_name}}" required>
                                 <div class="form-control-icon">
                                     <i class="bi bi-person"></i>
                                 </div>
@@ -46,13 +46,13 @@ Manajemen Dosen
                         </div>
                     </div>
                     <div class="col-md-4">
-                        <label for="edit-brithday-dosen">Tanggal Lahir</label>
+                        <label for="edit-brithday-mhs">Tanggal Lahir</label>
                     </div>
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
-                                <input type="date" class="form-control" name="edit-brithday-dosen"  placeholder="Birthday"
-                                    id="edit-brithday-dosen" value="{{data.tanggal_lahir}}" required>
+                                <input type="date" class="form-control" name="edit-brithday-mhs"  placeholder="Birthday"
+                                    id="edit-brithday-mhs" value="{{data.tanggal_lahir}}" required>
                                 <div class="form-control-icon">
                                     <i class="bi bi-calendar3"></i>
                                 </div>
@@ -65,12 +65,39 @@ Manajemen Dosen
                     <div class="col-md-8">
                         <div class="form-group">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="edit-gender-dosen" id="male" value="male" {{ 'checked' if selected_gender == 'male' else '' }}>
+                                <input class="form-check-input" type="radio" name="edit-gender-mhs" id="male" value="male" {{ 'checked' if selected_gender == 'male' else '' }}>
                                 <label class="form-check-label" for="male">Laki-laki</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="edit-gender-dosen" id="female" value="female" {{ 'checked' if selected_gender == 'female' else '' }}>
+                                <input class="form-check-input" type="radio" name="edit-gender-mhs" id="female" value="female" {{ 'checked' if selected_gender == 'female' else '' }}>
                                 <label class="form-check-label" for="female">Perempuan</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="edit-nip">ID</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="edit nip"
+                                    id="edit-nip" value="{{data.id_ortu}}" disabled>
+                                <div class="form-control-icon">
+                                    <i class="fa-solid fa-user-secret"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="edit-nama">Nama Orang Tua</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
+                            <div class="position-relative">
+                                <input type="text" class="form-control" placeholder="Nama" name="edit-nama-mhsortu" value="{{data.fname_ortu}}" required>
+                                <div class="form-control-icon">
+                                    <i class="bi bi-person"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
