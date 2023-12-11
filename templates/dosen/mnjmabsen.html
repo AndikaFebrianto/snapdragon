@@ -1,0 +1,72 @@
+{% extends 'navdosen.html' %}
+
+{% block tittle %}
+Manajemen Absen
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Manajemen Absen</h1>
+</div>
+<section class="section">
+    <div class="row" id="table-bordered">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <form>
+                        <input class="form-control" list="datalistOptions" 
+                        id="exampleDataList" placeholder="search...">
+                        <datalist id="datalistOptions">
+                        <option value="San Francisco">
+                        <option value="New York">
+                        <option value="Seattle">
+                        <option value="Los Angeles">
+                        <option value="Chicago">
+                        </datalist>
+                    </form>
+                </div>
+
+                <div class="card-content">
+                    <div class="card-body">
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code>mata kuliah</code> yang tersedia.
+                        </p>
+                    </div>
+                    <div class="table-responsive mx-4 mb-4">
+                        <table class="table table-bordered table-striped table-dark mb-0">
+                            <thead>
+                                <tr>
+                                    <th>KDM</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Waktu</th>
+                                    <th>Ruang</th>
+                                    <th>Nama Dosen</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in dosen %}
+                                <tr>
+                                    <td>{{user['matkul']}}</td>
+                                    <td>{{user['name_matkul']}}</td>
+                                    <td>{{user['time']}}</td>
+                                    <td>{{user['room']}}</td>
+                                    <td>{{user['username']}}</td>
+
+                                    <td>
+                                        <a href="/editkelas/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
+                                        <a href="/deletekelas/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+</script>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'navdosen.html' %}
+
+{% block tittle %}
+Tambah Mahasiswa
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Tambah Mahasiswa</h1>
+</div>
+<section class="section">
+    <div class="row" id="table-bordered">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahmhs">
+                        Tambah
+                    </button>
+                </div>
+
+                <div class="card-content">
+                    <div class="card-body">
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code>mahasiswa</code> yang tersedia.
+                        </p>
+                    </div>
+                    <div class="table-responsive mx-4 mb-4">
+                        <table class="table table-bordered table-striped table-dark mb-0">
+                            <thead>
+                                <tr>
+                                    <th>NPM</th>
+                                    <th>Nama</th>
+                                    <th>id orangtua</th>
+                                    <th>Nama Orangtua</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in dosen %}
+                                <tr>
+                                    <td>{{user['nomer_induk']}}</td>
+                                    <td>{{user['nama_lengkap']}}</td>
+                                    <td>{{user['id_ortu']}}</td>
+                                    <td>{{user['nama_ortu']}}</td>
+                                    <td>
+                                        <a href="editmahasiswa/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
+                                        <a href="/deletemahasiswa/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="tambahmahasiswa" data-bs-backdrop="static" data-bs-keyboard="false"
+tabindex="-1" aria-labelledby="tambahmahasiswaLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="tambahmahasiswaLabel">Tambah Mahasiswa</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <input class="form-control" list="datalistOptions" 
+                            id="exampleDataList" placeholder="search...">
+                            <datalist id="datalistOptions">
+                            <option value="San Francisco">
+                            <option value="New York">
+                            <option value="Seattle">
+                            <option value="Los Angeles">
+                            <option value="Chicago">
+                            </datalist>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+</script>
+
+{% endblock %}
