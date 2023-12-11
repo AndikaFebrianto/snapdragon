@@ -1,0 +1,225 @@
+{% extends 'nav.html' %}
+
+{% block tittle %}
+Manajemen Mata Kuliah
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Manajemen Mata Kuliah</h1>
+</div>
+<section class="section">
+    <div class="row" id="table-bordered">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahmatkul">
+                        Tambah
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div class="card-body">
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code>Mata Kuliah</code> yang
+                            tersedia.
+                        </p>
+                    </div>
+                    <div class="table-responsive mx-4 mb-4">
+                        <table class="table table-bordered table-striped table-dark mb-0">
+                            <thead>
+                                <tr>
+                                    <th>KDM</th>
+                                    <th>Nama Matkul</th>
+                                    <th>Jurusan</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for matkul in semua_matkul %}
+                                <tr>
+                                    <td>{{matkul['Kode_Matkul']}}</td>
+                                    <td>{{matkul['Nama_Matkul']}}</td>
+                                    <td>{{matkul['Jurusan']}}</td>
+                                    <td>
+                                        <a href="editmatkul/{{matkul._id}}" class="btn icon btn-info"><i
+                                                class="fa-solid fa-pen-to-square text-white" title="edit"></i></a>
+                                        <a href="/deletematkul/{{matkul._id}}" class="btn icon btn-danger"><i
+                                                class="fa-solid fa-trash" title="Hapus"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="tambahmatkul" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="tambahmsh" aria-hidden="true">
+
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="tambahmsh">Tambah Dosen</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="NIM">KDM</label>
+                                <div class="d-flex">
+                                    <input type="text" class="form-control w-25 mx-2" id="jurusan" name="input-jurusan"
+                                        placeholder="Jurusan">
+                                    <input type="text" id="input-kdm" class="form-control w-50" name="input-kdm"
+                                        placeholder="KDM" readonly disabled>
+                                    <a id="generate-kdm" class="btn icon btn-warning mx-2"><i
+                                            class="fa-solid fa-rotate-right" title="Generate"></i></a>
+                                    <a id="check_kdm" class="btn icon btn-info"><i class="fa-solid fa-magnifying-glass"
+                                            title="check"></i></i></a>
+                                </div>
+                                <p id="help-kdm-input" class="mt-2"></p>
+
+                            </div>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="namamatkul">Nama Mata Kuliah</label>
+                                <input type="text" id="namamatkul" class="form-control" name="namamatkul"
+                                    placeholder="Nama Mata Kuliah" required>
+                            </div>
+                            <p id="help-namamatkul-input" class="mt-2"></p>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="jurusan">jurusan</label>
+                                <select class="form-select" name="pilihjurusan" id="pilihjurusan" required>
+                                    <option selected>Pilih Jurusan</option>
+                                    <option value="Sistem Informasi">Sistem Informasi</option>
+                                    <option value="Teknik Komputer">Teknik Komputer</option>
+                                    <option value="Teknik Informatika">Teknik Informatika</option>
+                                  </select>
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-success me-1 mb-1" id="savematkul">Submit</button>
+                            <button type="button" class="btn btn-light-secondary me-1 mb-1"
+                                data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<script>
+    function getRandomLetter() {
+        var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        return letters.charAt(Math.floor(Math.random() * letters.length));
+    }
+
+    function getRandomNumber(max) {
+        return Math.floor(Math.random() * max).toString().padStart(2, '0');
+    }
+
+    $(document).ready(function() {
+        $('#input-kdm').val('');
+        $('#namamatkul').val('');
+        $('#jurusan').val('');
+        $('option').val('option:checked');
+
+        $('#generate-kdm').click(function() {
+            let jurusan = $('#jurusan').val();
+            if (jurusan === '') {
+                $("#help-kdm-input")
+                    .text("Please enter your code")
+                    .addClass("text-danger");
+                return;
+            }
+            $("#help-kdm-input").text('');
+            $("#help-kdm-input").removeClass('text-danger');
+            var departmentCode = $('#jurusan').val();
+            var randomLetters = getRandomLetter() + getRandomLetter();
+            var randomNumbers = getRandomNumber(10000);
+            var code = randomLetters + '-' + departmentCode + randomNumbers;
+            $('#input-kdm').val(code);
+        });
+    });
+    
+    $('#check_kdm').click(function () {
+            let kdm = $("#input-kdm").val();
+            if (kdm === "") {
+                $("#help-kdm-input")
+                    .text("Enter in your kdm")
+                    .removeClass("text-success")
+                    .addClass("text-danger");
+                return;
+            }
+            $("#help-kdm-input").text('');
+            $("#help-kdm-input").removeClass('text-danger');
+            $.ajax({
+                type: "POST",
+                url: "/manajemen-matkul/checkkdm",
+                data: {
+                    kdm: kdm
+                },
+                success: function (response) {
+                    if (response["exists"]) {
+                        $("#help-kdm-input")
+                            .text("This kdm is already in use.")
+                            .addClass("text-danger");
+                    } else {
+                        $("#help-kdm-input")
+                            .text("This kdm is available!")
+                            .removeClass("text-danger")
+                            .addClass("text-success");
+                    }
+                }
+            });
+        });
+
+        $('#savematkul').click(function () {
+            let kdm = $("#input-kdm").val();
+            let matkul = $("#namamatkul").val();
+            let pilihjurusan = $("#pilihjurusan").val();
+
+            if ($("#help-kdm-input").hasClass("text-danger")) {
+                alert("Please check your nim");
+                return;
+            } else if (!$("#help-kdm-input").hasClass("text-success")) {
+                alert("Please double check your nim");
+                return;
+            }
+            if (matkul === '') {
+                $("#help-matkul-input")
+                    .text("Please enter your name")
+                    .addClass("text-danger");
+                return;
+            }
+            $("#help-matkul-input").text('');
+            $("#help-matkul-input").removeClass('text-danger');
+            $.ajax({
+                type: "POST",
+                url: "/manajemen-mahasiswa/savematkul",
+                data: {
+                    kdm: kdm,
+                    matkul: matkul,
+                    pilihjurusan: pilihjurusan,
+                },
+                success: function (response) {
+                    alert("Nice!");
+                    window.location.replace("/manajemen-matakuliah");
+                }
+            });
+        });
+
+        
+    </script>
+
+{% endblock %}
