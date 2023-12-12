@@ -68,7 +68,6 @@ def sign_in():
             }
         )
 
-
 @app.route('/dashboard')
 def dashboard():
     token_receive = request.cookies.get("mytoken")
@@ -277,8 +276,7 @@ def editmatkul(id):
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
         selected_major = data.get('Jurusan')
-        print(selected_major)
-        return render_template('admin/editmatkul.html', data=data, active_page="mnjm_mhs", user_info=user_info, selected_major=selected_major)
+        return render_template('admin/editmatkul.html', data=data, active_page="mnjm_matkul", user_info=user_info, selected_major=selected_major)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
@@ -287,6 +285,84 @@ def deletematkul(id):
     db.matakuliah.delete_one({'_id': ObjectId(id)})
     return redirect(url_for('mnjmmatakuliah'))
 
+@app.route('/manajemen-kelas')
+def mnjm_kelas():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]})
+        matakuliah_list = db.matakuliah.find()
+        kelas_list = list(db.kelas.aggregate([
+            {
+                "$lookup": {
+                    "from": "matakuliah",
+                    "localField": "Kode_Matkul",
+                    "foreignField": "Kode_Matkul",
+                    "as": "info_matakuliah"
+                }
+            },
+            {
+                "$unwind": "$info_matakuliah"
+            },
+            {
+                "$project": {
+                    "Kode_Matkul": 1,
+                    "nip": 1,
+                    "Waktu": 1,
+                    "Ruang": 1,
+                    "Nama_Matkul": "$info_matakuliah.Nama_Matkul",
+                    "Jurusan": "$info_matakuliah.Jurusan"
+                }
+            }
+        ]))
+        return render_template('dosen/mnjmkelas.html', active_page="mnjm_kls" ,matakuliah_list=matakuliah_list, user_info=user_info, kelas_list=kelas_list)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/manajemen-kelas/savekelas', methods=['POST'])
+def savekelas():
+    matkul_receive = request.form['matkul']
+    ftime_receive = request.form['ftime']
+    fruang_receive = request.form['fruang']
+    dosen_receive = request.form['dosen']
+
+    doc = {
+        "Kode_Matkul": matkul_receive,
+        "nip": dosen_receive,
+        "Waktu": ftime_receive,
+        "Ruang": fruang_receive,
+    }
+    db.kelas.insert_one(doc)
+    return jsonify({'result': 'success'})
+
+@app.route('/editkelas/<string:id>', methods=['GET', 'POST'])
+def editkelas(id):
+    if request.method == 'POST':
+        time_receive = request.form['edit-waktu-matakuliah']
+        room_receive = request.form['edit-ruang-matakuliah']
+
+        db.kelas.update_one({'_id': ObjectId(id)}, {'$set': {'Waktu': time_receive, 'Ruang': room_receive}})
+        return redirect(url_for('mnjm_kelas'))
+    
+    token_receive = request.cookies.get("mytoken")
+    try:
+        data = db.kelas.find_one({'_id': ObjectId(id)})
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        kelas = db.kelas.find()
+        return render_template('dosen/editkelas.html', data=data, user_info=user_info, kelas=kelas ,active_page="mnjm_kls")
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/deletekelas/<string:id>')
+def deletekelas(id):
+    db.kelas.delete_one({'_id': ObjectId(id)})
+    return redirect(url_for('mnjm_kelas'))
+
+
+@app.route('/test')
+def test():
+    return render_template('dosen/mnjmkelastest.html')
 
 @app.route('/Acoount')
 def account():

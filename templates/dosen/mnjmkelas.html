@@ -1,4 +1,4 @@
-{% extends 'navdosen.html' %}
+{% extends 'nav.html' %}
 
 {% block tittle %}
 Manajemen Kelas
@@ -20,7 +20,7 @@ Manajemen Kelas
 
                 <div class="card-content">
                     <div class="card-body">
-                        <p class="card-text">Harap tambahkan informasi mengenai data <code>mata kuliah</code> yang tersedia.
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code> Kelas </code> yang tersedia.
                         </p>
                     </div>
                     <div class="table-responsive mx-4 mb-4">
@@ -36,17 +36,16 @@ Manajemen Kelas
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for user in dosen %}
+                                {% for kelas in kelas_list %}
                                 <tr>
-                                    <td>{{user['matkul']}}</td>
-                                    <td>{{user['name_matkul']}}</td>
-                                    <td>{{user['time']}}</td>
-                                    <td>{{user['room']}}</td>
-                                    <td>{{user['username']}}</td>
-
+                                    <td>{{kelas['Kode_Matkul']}}</td>
+                                    <td><a href="">{{kelas['Nama_Matkul']}}</a></td>
+                                    <td>{{kelas['Waktu']}}</td>
+                                    <td>{{kelas['Ruang']}}</td>
+                                    <td>{{user_info['full_name']}}</td>
                                     <td>
-                                        <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
-                                        <a href="/deletedosen/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
+                                        <a href="/editkelas/{{ kelas._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
+                                        <a href="/deletekelas/{{kelas._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -73,23 +72,21 @@ tabindex="-1" aria-labelledby="tambahkelasLabel" aria-hidden="true">
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
-                            <label for="KDM">KDM</label>
-                            <div class="form-floating">
-                                <select class="form-select" id="select-matkul" aria-label="Floating label select example">
-                                  <option selected>Pilih KDM matakuliah</option>
-                                  <option value="1">One</option>
-                                  <option value="2">Two</option>
-                                  <option value="3">Three</option>
-                                </select>
-                            </div>
-                            <p id="help-kdm-input" class="mt-2"></p>
+                            <label for="KDM">Mata Kuliah</label>
+                            <select class="form-select" id="select-matkull" name="select-matkull" aria-label="Default select example">
+                                <option value="">Pilih Mata Kuliah</option>
+                                {% for mk in matakuliah_list %}
+                                    <option value="{{ mk.Kode_Matkul }}">{{  mk.Nama_Matkul }}</option>
+                                {% endfor %}
+                              </select>
+                            <p id="help-matkul1-input" class="mt-2"></p>
                         </div>
                     </div>
                     <div class="col-12 mb-2">
                         <div class="form-group">
                             <label for="ftime">Waktu</label>
                             <input type="text" id="ftime" class="form-control" name="ftime"
-                                placeholder="Waktu" required>
+                                placeholder="example 1/2/3" required>
                         </div>
                         <p id="help-ftime-input" class="mt-2"></p>
                     </div>
@@ -103,21 +100,17 @@ tabindex="-1" aria-labelledby="tambahkelasLabel" aria-hidden="true">
                     </div>
                     <div class="col-12 mb-2">
                         <div class="form-group">
-                            <label for="dosen">Nama Dosen</label>
-                            <div class="form-floating">
-                                <select class="form-select" id="select-dosen" aria-label="Floating label select example">
-                                  <option selected>Pilih id dosen</option>
-                                  <option value="1">One</option>
-                                  <option value="2">Two</option>
-                                  <option value="3">Three</option>
-                                </select>
-                            </div>
-                            <p id="help-dosen-input" class="mt-2"></p>
+                            <label for="fruang">Dosen</label>
+                            <input type="text" id="fnmedosen1" class="form-control" name="fnmedosen1"
+                                placeholder="Dosen" value="{{user_info.full_name}}" required disabled>
+                            <input type="hidden" id="iddosen1" class="form-control" name="iddosen1"
+                                value="{{user_info.username}}" required disabled>
                         </div>
+                        <p id="help-fruang-input" class="mt-2"></p>
                     </div>
                     <div class="col-12 d-flex justify-content-end mt-4">
                         <button type="submit" class="btn btn-success me-1 mb-1"
-                            id="savedosen">Submit</button>
+                            id="savekelas">Submit</button>
                         <button type="button" class="btn btn-light-secondary me-1 mb-1"
                             data-bs-dismiss="modal">Close</button>
                     </div>
@@ -130,26 +123,31 @@ tabindex="-1" aria-labelledby="tambahkelasLabel" aria-hidden="true">
 
 <script>
     $(document).ready(function () {
-        $('#select-matkul').val('');
+        $('#select-matkul1').val('');
         $('#ftime').val('');
         $('#fruang').val('');
-        $('#select-dosen').val('');
 
         $('#savekelas').click(function () {
-            let kdm = $("#select-matkul").val();
+            let matkul = $("#select-matkull").val();
             let ftime = $("#ftime").val();
             let fruang = $("#fruang").val();
-            let dosen = $("select-dosen").val();
+            let dosen = $("#iddosen1").val();
 
-            if (ftime === '') {
-                $("#help-ftime-input")
-                    .text("Please enter your name")
+            if (matkul === '') {
+                $("#help-matkul1-input")
+                    .text("Please enter your matkul")
                     .addClass("text-danger");
                 return;
             }
             if (ftime === '') {
+                $("#help-ftime-input")
+                    .text("Please enter your time")
+                    .addClass("text-danger");
+                return;
+            }
+            if (fruang === '') {
                 $("#help-fname-input")
-                    .text("Please enter your name")
+                    .text("Please enter your place")
                     .addClass("text-danger");
                 return;
             }
@@ -158,7 +156,7 @@ tabindex="-1" aria-labelledby="tambahkelasLabel" aria-hidden="true">
                 type: "POST",
                 url: "/manajemen-kelas/savekelas",
                 data: {
-                    kdm: kdm,
+                    matkul: matkul,
                     ftime: ftime,
                     fruang: fruang,
                     dosen: dosen,

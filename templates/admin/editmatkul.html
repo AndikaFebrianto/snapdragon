@@ -59,7 +59,7 @@ Manajemen Mahasiswa
                         </div>
                     </div>  
                     <div class="col-12 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-success me-1 mb-1">Submit</button>
+                        <button type="submit" class="btn btn-success me-1 mb-1" id="editmatkul">Submit</button>
                     </div>
                 </div>
             </div>
@@ -69,6 +69,8 @@ Manajemen Mahasiswa
 
 
 <script>
-    let pilihjurusan = $("#editpilihjurusan").val('{{selected_major}}');
+    $(document).ready(function () {
+        let pilihjurusan = $("#editpilihjurusan").val('{{selected_major}}');
+    });
 </script>
 {% endblock %}

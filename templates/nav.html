@@ -100,9 +100,10 @@
                             </a>
                         </li>
                         {% endif %}
+
                         {% if user_role == 'dosen' %}
-                        <li class="sidebar-item {{ 'active' if active_page == 'mnjm_dosen' else '' }}">
-                            <a href="/manajemen-dosen" class='sidebar-link'>
+                        <li class="sidebar-item {{ 'active' if active_page == 'mnjm_kls' else '' }}">
+                            <a href="/manajemen-kelas" class='sidebar-link'>
                                 <i class="bi bi-mortarboard"></i>
                                 <span>Manajemen kelas</span>
                             </a>
@@ -114,6 +115,7 @@
                             </a>
                         </li>
                         {% endif %}
+                        
                         <li class="sidebar-item {{ 'active' if active_page == 'account' else '' }}">
                             <a href="/Acoount" class='sidebar-link'>
                                 <i class="bi bi-person-fill-add"></i>

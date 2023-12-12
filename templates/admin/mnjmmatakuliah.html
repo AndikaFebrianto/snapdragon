@@ -131,8 +131,6 @@ Manajemen Mata Kuliah
     $(document).ready(function() {
         $('#input-kdm').val('');
         $('#namamatkul').val('');
-        $('#jurusan').val('');
-        $('option').val('option:checked');
 
         $('#generate-kdm').click(function() {
             let jurusan = $('#jurusan').val();
@@ -190,10 +188,10 @@ Manajemen Mata Kuliah
             let pilihjurusan = $("#pilihjurusan").val();
 
             if ($("#help-kdm-input").hasClass("text-danger")) {
-                alert("Please check your nim");
+                alert("Please check your kdm");
                 return;
             } else if (!$("#help-kdm-input").hasClass("text-success")) {
-                alert("Please double check your nim");
+                alert("Please double check your kdm");
                 return;
             }
             if (matkul === '') {

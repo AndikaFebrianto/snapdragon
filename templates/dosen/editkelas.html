@@ -1,4 +1,4 @@
-{% extends 'navdosen.html' %}
+{% extends 'nav.html' %}
 
 {% block tittle %}
 Manajemen Kelas
@@ -25,7 +25,7 @@ Manajemen Kelas
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
                                 <input type="text" class="form-control" placeholder="edit KDM"
-                                    id="edit-KDM" value="{{data.matkul}}" disabled>
+                                    id="edit-KDM" value="{{data.Kode_Matkul}}" disabled>
                                 <div class="form-control-icon">
                                     <i class="fa-solid fa-user-secret"></i>
                                 </div>
@@ -38,7 +38,7 @@ Manajemen Kelas
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Waktu Kelas" name="edit-waktu-matakuliah" id="edit-waktu" value="{{data.time}}">
+                                <input type="text" class="form-control" placeholder="Waktu Kelas" name="edit-waktu-matakuliah" id="edit-waktu" value="{{data.Waktu}}">
                                 <div class="form-control-icon">
                                     <i class="bi bi-person"></i>
                                 </div>
@@ -51,7 +51,7 @@ Manajemen Kelas
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Ruang kelas" name="edit-ruang-matakuliah" id="edit-ruang" value="{{data.room}}">
+                                <input type="text" class="form-control" placeholder="Ruang kelas" name="edit-ruang-matakuliah" id="edit-ruang" value="{{data.Ruang}}">
                                 <div class="form-control-icon">
                                     <i class="bi bi-person"></i>
                                 </div>
@@ -65,7 +65,7 @@ Manajemen Kelas
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
                                 <input type="text" class="form-control" placeholder="edit dosen"
-                                    id="edit-KDM" value="{{data.username}}" disabled>
+                                    id="edit-KDM" value="{{user_info.full_name}}" disabled>
                                 <div class="form-control-icon">
                                     <i class="fa-solid fa-user-secret"></i>
                                 </div>
