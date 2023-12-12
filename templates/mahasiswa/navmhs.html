@@ -89,22 +89,10 @@
                             </a>
                         </li>
                         {% if user_role == 'superuser' %}
-                        <li class="sidebar-item {{ 'active' if active_page == 'plrn_ortu' else '' }}">
-                            <a href="/manajemen-dosen" class='sidebar-link'>
-                                <i class="bi bi-folder"></i>
-                                <span>Laporan Orangtua</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ 'active' if active_page == 'mnjm_kelas' else '' }}">
-                            <a href="index.html" class='sidebar-link'>
-                                <i class="bi bi-mortarboard-fill"></i>
-                                <span>Manajemen kelas</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item {{ 'active' if active_page == 'mnjm_absn' else '' }}">
+                        <li class="sidebar-item {{ 'active' if active_page == 'daftar_matkul' else '' }}">
                             <a href="index.html" class='sidebar-link'>
                                 <i class="bi bi-clipboard-check-fill"></i>
-                                <span>Manajemen Absensi</span>
+                                <span>Data Absensi</span>
                             </a>
                         </li>
                         {% endif %}

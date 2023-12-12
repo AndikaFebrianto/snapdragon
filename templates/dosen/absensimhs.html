@@ -1,0 +1,64 @@
+{% extends 'navdosen.html' %}
+
+{% block tittle %}
+Absensi Mahasiswa
+{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <h1>Absensi Mahasiswa</h1>
+</div>
+<section class="section">
+    <div class="row" id="table-bordered">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-content">
+                    <div class="card-body">
+                        <p class="card-text">Harap perhatikan informasi mengenai data <code>absensi mahasiswa</code> yang tersedia.
+                        </p>
+                    </div>
+                    <div class="table-responsive mx-4 mb-4">
+                        <table class="table table-bordered table-striped table-dark mb-0">
+                            <thead>
+                                <tr>
+                                    <th>NPM</th>
+                                    <th>Nama</th>
+                                    <th>Pertemuan ke 1</th>
+                                    <th>Pertemuan ke 2</th>
+                                    <th>Pertemuan ke 3</th>
+                                    <th>Pertemuan ke 4</th>
+                                    <th>Pertemuan ke 5</th>
+                                    <th>Pertemuan ke 6</th>
+                                    <th>Pertemuan ke 7</th>
+                                    <th>UTS</th>
+                                    <th>Pertemuan ke 9</th>
+                                    <th>Pertemuan ke 10</th>
+                                    <th>Pertemuan ke 11</th>
+                                    <th>Pertemuan ke 12</th>
+                                    <th>Pertemuan ke 13</th>
+                                    <th>Pertemuan ke 14</th>
+                                    <th>Pertemuan ke 15</th>
+                                    <th>UAS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in dosen %}
+                                <tr>
+                                    <td>{{user['nomer_induk']}}</td>
+                                    <td>{{user['nama_lengkap']}}</td>
+                                    <td>{{user['pertemuan']}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+</script>
+
+{% endblock %}
