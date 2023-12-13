@@ -39,7 +39,7 @@ Manajemen Kelas
                                 {% for kelas in kelas_list %}
                                 <tr>
                                     <td>{{kelas['Kode_Matkul']}}</td>
-                                    <td><a href="">{{kelas['Nama_Matkul']}}</a></td>
+                                    <td><a href="/tambah-kelas-mahasiswa/{{kelas._id}}">{{kelas['Nama_Matkul']}}</a></td>
                                     <td>{{kelas['Waktu']}}</td>
                                     <td>{{kelas['Ruang']}}</td>
                                     <td>{{user_info['full_name']}}</td>

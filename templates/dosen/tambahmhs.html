@@ -1,4 +1,4 @@
-{% extends 'navdosen.html' %}
+{% extends 'nav.html' %}
 
 {% block tittle %}
 Tambah Mahasiswa
@@ -13,14 +13,16 @@ Tambah Mahasiswa
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahmhs">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#tambahmahasiswa">
                         Tambah
                     </button>
                 </div>
 
                 <div class="card-content">
                     <div class="card-body">
-                        <p class="card-text">Harap tambahkan informasi mengenai data <code>mahasiswa</code> yang tersedia.
+                        <p class="card-text">Harap tambahkan informasi mengenai data <code>mahasiswa</code> yang
+                            tersedia.
                         </p>
                     </div>
                     <div class="table-responsive mx-4 mb-4">
@@ -42,8 +44,10 @@ Tambah Mahasiswa
                                     <td>{{user['id_ortu']}}</td>
                                     <td>{{user['nama_ortu']}}</td>
                                     <td>
-                                        <a href="editmahasiswa/{{ user._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
-                                        <a href="/deletemahasiswa/{{user._id}}" class="btn icon btn-danger"><i class="fa-solid fa-trash" title="Hapus"></i></a>
+                                        <a href="editmahasiswa/{{ user._id }}" class="btn icon btn-info"><i
+                                                class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
+                                        <a href="/deletemahasiswa/{{user._id}}" class="btn icon btn-danger"><i
+                                                class="fa-solid fa-trash" title="Hapus"></i></a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -56,39 +60,82 @@ Tambah Mahasiswa
     </div>
 </section>
 
-<div class="modal fade" id="tambahmahasiswa" data-bs-backdrop="static" data-bs-keyboard="false"
-tabindex="-1" aria-labelledby="tambahmahasiswaLabel" aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h1 class="modal-title fs-5" id="tambahmahasiswaLabel">Tambah Mahasiswa</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <input class="form-control" list="datalistOptions" 
-                            id="exampleDataList" placeholder="search...">
-                            <datalist id="datalistOptions">
-                            <option value="San Francisco">
-                            <option value="New York">
-                            <option value="Seattle">
-                            <option value="Los Angeles">
-                            <option value="Chicago">
-                            </datalist>
+<div class="modal fade" id="tambahmahasiswa" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="tambahmahasiswaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="tambahmahasiswaLabel">Tambah Mahasiswa</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <div class="d-flex">
+                                    <input type="text" class="form-control w-85 mx-2" id="carimahasiswa" name="carimhs"
+                                        placeholder="search...">
+                                    <a id="carimhs" class="btn btn-warning"><i class="fa fa-search"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div id="hasilPencarian">
+                                <table id="tabelHasil" class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>NIM</th>
+                                            <th>Nama</th>
+                                            <th>Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-</div>
 
-<script>
-</script>
+    <script>
+        function tambah(){
+            getnim = $('#getnim').val();
+            $.ajax({
+                type: "POST",
+                url: "/tambah-kelas-mahasiswa",
+                data: {
+                    getnim : getnim,
+                },
+                success: function (response) {
+                    console.log(response.hasil)
+                }
+            });
+        }
+        $(document).ready(function () {
+            $('#carimhs').click(function () {
+                var carimahasiswa = $('#carimahasiswa').val();
+                $.post('/carimahasiswa', { searchValue: carimahasiswa }, function (data) {
+                    var tabelBody = $('#tabelHasil > tbody');
+                    tabelBody.empty();
+                    if (data.hasil && Array.isArray(data.hasil)) {
+                        $.each(data.hasil, function (index, mahasiswa) {
+                            if (mahasiswa.username && mahasiswa.full_name) {
+                                test = mahasiswa
+                                var baris = '<tr><td>' + mahasiswa.username + '</td><td>' + mahasiswa.full_name + '</td><td>' + '<a onclick="tambah()" class="btn btn-success btn-sm">Tambah</a>' + '</td></tr>' ;
+                                var baris2 = '<tr class="d-none"><td>' + `<input type="hidden" id="getnim" class="form-control" value="${mahasiswa.username}">` + '</td><td>' + `<input type="hidden" class="form-control" value="${mahasiswa.full_name}">` + '</td><td>' +'' + '</td></tr>' ;
+                                tabelBody.append(baris, baris2);
+                            }
+                        });
+                    } else {
+                        tabelBody.append('<tr><td colspan="2">Data tidak ditemukan atau format data salah</td></tr>');
+                    }
+                });
+            });
+        });
+    </script>
 
-{% endblock %}
+    {% endblock %}

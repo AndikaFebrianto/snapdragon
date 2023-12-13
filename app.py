@@ -349,8 +349,8 @@ def editkelas(id):
         data = db.kelas.find_one({'_id': ObjectId(id)})
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
-        kelas = db.kelas.find()
-        return render_template('dosen/editkelas.html', data=data, user_info=user_info, kelas=kelas ,active_page="mnjm_kls")
+        # kelas = db.kelas.find()
+        return render_template('dosen/editkelas.html', data=data, user_info=user_info ,active_page="mnjm_kls")
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
@@ -359,10 +359,53 @@ def deletekelas(id):
     db.kelas.delete_one({'_id': ObjectId(id)})
     return redirect(url_for('mnjm_kelas'))
 
+@app.route('/tambah-kelas-mahasiswa/<string:id>', methods=['GET', 'POST'])
+def tambahklsmhs(id):
+    token_receive = request.cookies.get("mytoken")
+    if request.method == 'POST':
+        nim_receive = request.form['getnim']
+        data = db.kelas.find_one({'_id': ObjectId(id)})
+        # print(data)
+        # doc = {
+        #     "kode_kelas": data,
+        #     "nim": nim_receive,
+        #     "nip": nip,
+        # }
+        # db.kelas.insert_one(doc)
+        # return redirect(url_for('mnjm_kelas'))
+    
+    token_receive = request.cookies.get("mytoken")
+    try:
+        data = db.kelas.find_one({'_id': ObjectId(id)})
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        return render_template('dosen/tambahmhs.html', data=data, user_info=user_info,active_page="mnjm_kls")
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/carimahasiswa', methods=['POST'])
+def carimhs():
+    searchValue = request.form['searchValue']
+    print(searchValue)
+    query = {
+        '$and': [
+            {'role': 'mahasiswa'},
+            {
+                '$or': [
+                    {'full_name': {'$regex': searchValue, '$options': 'i'}},
+                    {'username': {'$regex': searchValue, '$options': 'i'}}
+                ]
+            }
+        ]
+    }
+    hasil = list(db.users.find(query, {'_id': 0}))
+    # print(hasil)
+    return jsonify({'hasil': hasil})
+
 
 @app.route('/test')
 def test():
-    return render_template('dosen/mnjmkelastest.html')
+    return render_template('dosen/absensimhs.html')
 
 @app.route('/Acoount')
 def account():
