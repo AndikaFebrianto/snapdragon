@@ -13,12 +13,10 @@ Tambah Mahasiswa
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#tambahmahasiswa">
-                        Tambah
-                    </button>
+                    <a href="/manajemen-kelas" class="btn btn-secondary">
+                        kembali
+                    </a>
                 </div>
-
                 <div class="card-content">
                     <div class="card-body">
                         <p class="card-text">Harap tambahkan informasi mengenai data <code>mahasiswa</code> yang
@@ -37,22 +35,26 @@ Tambah Mahasiswa
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for user in dosen %}
+                                {% for user in kls_mhs %}
                                 <tr>
-                                    <td>{{user['nomer_induk']}}</td>
-                                    <td>{{user['nama_lengkap']}}</td>
+                                    <td>{{user['nim']}}</td>
+                                    <td>{{user['fullname']}}</td>
                                     <td>{{user['id_ortu']}}</td>
-                                    <td>{{user['nama_ortu']}}</td>
+                                    <td>{{user['fname_ortu']}}</td>
                                     <td>
-                                        <a href="editmahasiswa/{{ user._id }}" class="btn icon btn-info"><i
-                                                class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
-                                        <a href="/deletemahasiswa/{{user._id}}" class="btn icon btn-danger"><i
+                                        <a href="/deletetmbhmhs/{{user._id}}" class="btn icon btn-danger"><i
                                                 class="fa-solid fa-trash" title="Hapus"></i></a>
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#tambahmahasiswa">
+                            Tambah
+                        </button>
                     </div>
                 </div>
             </div>
@@ -75,7 +77,7 @@ Tambah Mahasiswa
                             <div class="form-group">
                                 <div class="d-flex">
                                     <input type="text" class="form-control w-85 mx-2" id="carimahasiswa" name="carimhs"
-                                        placeholder="search...">
+                                        placeholder="Masukkan NIM">
                                     <a id="carimhs" class="btn btn-warning"><i class="fa fa-search"></i></a>
                                 </div>
                             </div>
@@ -91,6 +93,7 @@ Tambah Mahasiswa
                                         </tr>
                                     </thead>
                                     <tbody>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -102,36 +105,55 @@ Tambah Mahasiswa
     </div>
 
     <script>
-        function tambah(){
-            getnim = $('#getnim').val();
+        function tambah() {
+            getnim = $('#getnim1').val();
+            idKelas = $('#idkelas').val();
+            console.log(idKelas)
+            console.log(getnim)
             $.ajax({
                 type: "POST",
-                url: "/tambah-kelas-mahasiswa",
+                url: "/tambah-kelas-mahasiswa/{{data._id}}",
                 data: {
-                    getnim : getnim,
+                    getnim: getnim,
+                    idKelas: idKelas,
                 },
                 success: function (response) {
-                    console.log(response.hasil)
+                    if (response.success === true) {
+                        alert(response.message);
+                        window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}");
+                    }
+                    if (response.error === true) {
+                        alert(response.message);
+                    }
                 }
             });
         }
         $(document).ready(function () {
             $('#carimhs').click(function () {
-                var carimahasiswa = $('#carimahasiswa').val();
+                let carimahasiswa = $('#carimahasiswa').val();
                 $.post('/carimahasiswa', { searchValue: carimahasiswa }, function (data) {
-                    var tabelBody = $('#tabelHasil > tbody');
+                    let tabelBody = $('#tabelHasil > tbody');
                     tabelBody.empty();
+                    if (carimahasiswa === '') {
+                        alert('Inputkan NIM atau Nama Mahasiswa');
+                        return;
+                    }
                     if (data.hasil && Array.isArray(data.hasil)) {
+                        console.log(data.hasil)
+                        if (data.hasil.length == 0) {
+                            tabelBody.append('<tr><td colspan="3">Data Data tidak ditemukan.</td></tr>');
+                            return;
+                        }
                         $.each(data.hasil, function (index, mahasiswa) {
                             if (mahasiswa.username && mahasiswa.full_name) {
                                 test = mahasiswa
-                                var baris = '<tr><td>' + mahasiswa.username + '</td><td>' + mahasiswa.full_name + '</td><td>' + '<a onclick="tambah()" class="btn btn-success btn-sm">Tambah</a>' + '</td></tr>' ;
-                                var baris2 = '<tr class="d-none"><td>' + `<input type="hidden" id="getnim" class="form-control" value="${mahasiswa.username}">` + '</td><td>' + `<input type="hidden" class="form-control" value="${mahasiswa.full_name}">` + '</td><td>' +'' + '</td></tr>' ;
+                                let baris = '<tr><td>' + mahasiswa.username + '</td><td>' + mahasiswa.full_name + '</td><td>' + '<a onclick="tambah()" class="btn btn-success btn-sm">Tambah</a>' + '</td></tr>';
+                                let baris2 = '<tr class="d-none"><td>' + `<input type="hidden" id="getnim1" class="form-control" value="${mahasiswa.username}">` + '</td><td>' + `<input type="hidden" id="idkelas" class="form-control" value="{{data._id}}">` + '</td><td>' + '' + '</td></tr>';
                                 tabelBody.append(baris, baris2);
                             }
                         });
                     } else {
-                        tabelBody.append('<tr><td colspan="2">Data tidak ditemukan atau format data salah</td></tr>');
+                        tabelBody.append('<tr><td colspan="3">Data memilki format data salah.</td></tr>');
                     }
                 });
             });

@@ -364,43 +364,73 @@ def tambahklsmhs(id):
     token_receive = request.cookies.get("mytoken")
     if request.method == 'POST':
         nim_receive = request.form['getnim']
-        data = db.kelas.find_one({'_id': ObjectId(id)})
-        # print(data)
-        # doc = {
-        #     "kode_kelas": data,
-        #     "nim": nim_receive,
-        #     "nip": nip,
-        # }
-        # db.kelas.insert_one(doc)
-        # return redirect(url_for('mnjm_kelas'))
+        idKelas_recive = request.form['idKelas']
+        idKelas = ObjectId(idKelas_recive)
+        print(nim_receive)
+        data = db.kelas_mhs.find_one({"nim": nim_receive})
+        if data:
+            print("Data sudah ada")
+            return jsonify({'error': True, 'message': 'Data sudah ada'})
+        else:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+            user_info = db.users.find_one({'username':payload.get('id')})
+            db.kelas_mhs.insert_one({'idKelas': idKelas, 'username' : user_info['username'], 'nim': nim_receive})
+            return jsonify({'success': True, 'message': 'Data berhasil dimasukkan'})
+
     
     token_receive = request.cookies.get("mytoken")
     try:
         data = db.kelas.find_one({'_id': ObjectId(id)})
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
-        return render_template('dosen/tambahmhs.html', data=data, user_info=user_info,active_page="mnjm_kls")
+        kls_mhs = list(db.kelas_mhs.aggregate([
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "nim",
+                    "foreignField": "username",
+                    "as": "info_mhs"
+                }
+            },
+            {
+                "$unwind": "$info_mhs"
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "fullname": "$info_mhs.full_name", 
+                    "nim": "$info_mhs.username",
+                    "id_ortu": "$info_mhs.id_ortu",
+                    "fname_ortu": "$info_mhs.fname_ortu",
+
+                }
+            }
+        ]))
+        return render_template('dosen/tambahmhs.html', data=data, user_info=user_info,active_page="mnjm_kls",kls_mhs=kls_mhs)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
 @app.route('/carimahasiswa', methods=['POST'])
 def carimhs():
     searchValue = request.form['searchValue']
-    print(searchValue)
     query = {
         '$and': [
             {'role': 'mahasiswa'},
             {
                 '$or': [
-                    {'full_name': {'$regex': searchValue, '$options': 'i'}},
-                    {'username': {'$regex': searchValue, '$options': 'i'}}
+                    # {'full_name': {'$regex': searchValue, '$options': 'i'}},
+                    {'username': searchValue}
                 ]
             }
         ]
     }
     hasil = list(db.users.find(query, {'_id': 0}))
-    # print(hasil)
     return jsonify({'hasil': hasil})
+
+@app.route('/deletetmbhmhs/<string:id>')
+def deletetmbhmhs(id):
+    db.kelas_mhs.delete_one({'_id': ObjectId(id)})
+    return redirect(url_for('mnjm_kelas'))
 
 
 @app.route('/test')
