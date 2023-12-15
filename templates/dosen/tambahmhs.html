@@ -42,8 +42,8 @@ Tambah Mahasiswa
                                     <td>{{user['id_ortu']}}</td>
                                     <td>{{user['fname_ortu']}}</td>
                                     <td>
-                                        <a href="/deletetmbhmhs/{{user._id}}" class="btn icon btn-danger"><i
-                                                class="fa-solid fa-trash" title="Hapus"></i></a>
+                                        <button onclick="deletetmbh('{{user["_id"]}}')" class="btn icon btn-danger"><i
+                                                class="fa-solid fa-trash" title="Hapus"></i></button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -103,61 +103,70 @@ Tambah Mahasiswa
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        function tambah() {
-            getnim = $('#getnim1').val();
-            idKelas = $('#idkelas').val();
-            console.log(idKelas)
-            console.log(getnim)
-            $.ajax({
-                type: "POST",
-                url: "/tambah-kelas-mahasiswa/{{data._id}}",
-                data: {
-                    getnim: getnim,
-                    idKelas: idKelas,
-                },
-                success: function (response) {
-                    if (response.success === true) {
-                        alert(response.message);
-                        window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}");
-                    }
-                    if (response.error === true) {
-                        alert(response.message);
-                    }
+<script>
+    function deletetmbh(id) {
+        $.ajax({
+            type: "POST",
+            url: "/deletetmbhmhs/" + id,
+            success: function (response) {
+                if(response.result == "success"){
+                    alert('data berhasil dihapus');
+                    window.location.reload();
                 }
-            });
-        }
-        $(document).ready(function () {
-            $('#carimhs').click(function () {
-                let carimahasiswa = $('#carimahasiswa').val();
-                $.post('/carimahasiswa', { searchValue: carimahasiswa }, function (data) {
-                    let tabelBody = $('#tabelHasil > tbody');
-                    tabelBody.empty();
-                    if (carimahasiswa === '') {
-                        alert('Inputkan NIM atau Nama Mahasiswa');
+            }
+        });
+    }
+    
+    function tambah(index) {
+        getnim = $(`#getnim${index}`).val();
+        idKelas = $('#idkelas').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/tambah-kelas-mahasiswa/{{data._id}}",
+            data: {
+                getnim: getnim,
+                idKelas: idKelas,
+            },
+            success: function (response) {
+                if (response.success === true) {
+                    alert(response.message);
+                    window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}");
+                }
+                if (response.error === true) {
+                    alert(response.message);
+                }
+            }
+        });
+    }
+    $(document).ready(function () {
+        $('#carimhs').click(function () {
+            let carimahasiswa = $('#carimahasiswa').val();
+            $.post('/carimahasiswa', { searchValue: carimahasiswa }, function (data) {
+                let tabelBody = $('#tabelHasil > tbody');
+                tabelBody.empty();  
+                if (data.hasil && Array.isArray(data.hasil)) {
+                    console.log(data.hasil)
+                    if (data.hasil.length == 0) {
+                        tabelBody.append('<tr><td colspan="3">Data Data tidak ditemukan.</td></tr>');
                         return;
                     }
-                    if (data.hasil && Array.isArray(data.hasil)) {
-                        console.log(data.hasil)
-                        if (data.hasil.length == 0) {
-                            tabelBody.append('<tr><td colspan="3">Data Data tidak ditemukan.</td></tr>');
-                            return;
+                    $.each(data.hasil, function (index, mahasiswa) {
+                        if (mahasiswa.username && mahasiswa.full_name) {
+                            test = mahasiswa
+                            let baris = '<tr><td>' + mahasiswa.username + '</td><td>' + mahasiswa.full_name + '</td><td>' + `<a onclick="tambah(${index + 1})" class="btn btn-success btn-sm">Tambah</a>` + '</td></tr>';
+                            let baris2 = '<tr class="d-none"><td>' + `<input type="hidden" id="getnim${index + 1}" class="form-control" value="${mahasiswa.username}">` + '</td><td>' + `<input type="hidden" id="idkelas" class="form-control" value="{{data._id}}">` + '</td><td>' + '' + '</td></tr>';
+                            tabelBody.append(baris, baris2);
                         }
-                        $.each(data.hasil, function (index, mahasiswa) {
-                            if (mahasiswa.username && mahasiswa.full_name) {
-                                test = mahasiswa
-                                let baris = '<tr><td>' + mahasiswa.username + '</td><td>' + mahasiswa.full_name + '</td><td>' + '<a onclick="tambah()" class="btn btn-success btn-sm">Tambah</a>' + '</td></tr>';
-                                let baris2 = '<tr class="d-none"><td>' + `<input type="hidden" id="getnim1" class="form-control" value="${mahasiswa.username}">` + '</td><td>' + `<input type="hidden" id="idkelas" class="form-control" value="{{data._id}}">` + '</td><td>' + '' + '</td></tr>';
-                                tabelBody.append(baris, baris2);
-                            }
-                        });
-                    } else {
-                        tabelBody.append('<tr><td colspan="3">Data memilki format data salah.</td></tr>');
-                    }
-                });
+                    });
+                } else {
+                    tabelBody.append('<tr><td colspan="3">Data memilki format data salah.</td></tr>');
+                }
             });
         });
-    </script>
+    });
+</script>
 
-    {% endblock %}
+{% endblock %}

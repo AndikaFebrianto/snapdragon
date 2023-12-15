@@ -406,6 +406,9 @@ def tambahklsmhs(id):
                 }
             }
         ]))
+        for kls in kls_mhs:
+            kls['_id'] = str(kls['_id'])
+
         return render_template('dosen/tambahmhs.html', data=data, user_info=user_info,active_page="mnjm_kls",kls_mhs=kls_mhs)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
@@ -418,7 +421,7 @@ def carimhs():
             {'role': 'mahasiswa'},
             {
                 '$or': [
-                    # {'full_name': {'$regex': searchValue, '$options': 'i'}},
+                    {'full_name': {'$regex': searchValue, '$options': 'i'}},
                     {'username': searchValue}
                 ]
             }
@@ -427,12 +430,11 @@ def carimhs():
     hasil = list(db.users.find(query, {'_id': 0}))
     return jsonify({'hasil': hasil})
 
-@app.route('/deletetmbhmhs/<string:id>')
+@app.route('/deletetmbhmhs/<string:id>', methods=["POST"])
 def deletetmbhmhs(id):
     db.kelas_mhs.delete_one({'_id': ObjectId(id)})
-    return redirect(url_for('mnjm_kelas'))
-
-
+    return jsonify({"result": "success"})
+    # return redirect(url_for('mnjm_kelas'))
 
 @app.route('/Acoount')
 def account():
