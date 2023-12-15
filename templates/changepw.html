@@ -1,0 +1,146 @@
+{% extends 'nav.html' %}
+
+{% block tittle %}
+Change Password
+{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <h1>Change Password</h1>
+</div>
+
+<div class="page-content">
+    <section id="basic-horizontal-layouts">
+        <div class="row match-height">
+            <div class="col-md-4 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Profile Picture</h4>
+                    </div>
+                    <div class="card-body d-flex justify-content-center">
+                        <img src="{{ url_for('static', filename=user_info.profile_pic_real) }}" class="rounded-circle"
+                            alt="profile" style="width: 200px;">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Profile Information</h4>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-body">
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="first-name-horizontal">Old Password</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <div class="input-group">
+                                            <input type="password" class="form-control" id="oldpaswword"
+                                                name="oldpaswword" placeholder="Old Password">
+                                            <button id="showpasswordold" class="input-group-text"><i
+                                                    class="fa fa-eye-slash"></i></button>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="name-account">New Password</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <div class="input-group">
+                                            <input type="password" id="newpaswword" class="form-control" name="newpaswword"
+                                                placeholder="New Password">
+                                            <button id="showpasswordnew" class="input-group-text"><i
+                                                    class="fa fa-eye-slash"></i></button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="name-account">Confirm New Password</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <div class="input-group">
+
+                                            <input type="password" id="newpaswword1" class="form-control"
+                                                name="newpaswword1" placeholder="Confirm New Password">
+                                            <button id="showpasswordnew1" class="input-group-text"><i
+                                                    class="fa fa-eye-slash"></i></button>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-sm-12 d-flex justify-content-start">
+                                        <button id="changepw" type="submit"
+                                            class="btn btn-primary me-1 mb-1">Change</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let oldPassword = $("#oldpaswword").val('');
+        let newPassword = $("#newpaswword").val('');
+        let confirmPassword = $("#newpaswword1").val('');
+
+        $('#showpasswordold').click(function () {
+            var oldpassword = $("#oldpaswword");
+            var type = oldpassword.attr("type") === "password" ? "text" : "password";
+            oldpassword.attr("type", type);
+            $(this).find("i").toggleClass("far fa-eye");
+        });
+
+        $('#showpasswordnew').click(function () {
+            var newpassword = $("#newpaswword");
+            var type = newpassword.attr("type") === "password" ? "text" : "password";
+            newpassword.attr("type", type);
+            $(this).find("i").toggleClass("far fa-eye");
+        });
+
+        $('#showpasswordnew1').click(function () {
+            var newpassword1 = $("#newpaswword1");
+            var type = newpassword1.attr("type") === "password" ? "text" : "password";
+            newpassword1.attr("type", type);
+            $(this).find("i").toggleClass("far fa-eye");
+        });
+
+        $('#changepw').click(function () {
+            let oldPassword = $("#oldpaswword").val();
+            let newPassword = $("#newpaswword").val();
+            let confirmPassword = $("#newpaswword1").val();
+            if (oldPassword == "" || newPassword == "" || confirmPassword == "") {
+                alert("Please fill all the fields");
+            } else if (newPassword != confirmPassword) {
+                alert("New password and confirm password do not match");
+            } else {
+                $.ajax({
+                    url: "/changepassword",
+                    type: "POST",
+                    data: {
+                        old_password: oldPassword,
+                        new_password: newPassword
+                    },
+                    success: function (response) {
+                        if (response.result == "fail") {
+                            alert(response.msg);
+                        }
+                        if (response.result == "success") {
+                            alert(response.msg);
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+
+
+        });
+    });
+</script>
+
+{% endblock %}

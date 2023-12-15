@@ -433,13 +433,80 @@ def deletetmbhmhs(id):
     return redirect(url_for('mnjm_kelas'))
 
 
-@app.route('/test')
-def test():
-    return render_template('dosen/absensimhs.html')
 
 @app.route('/Acoount')
 def account():
-    return render_template('account.html', active_page='account')
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]},)
+        return render_template('account.html', active_page='account', user_info=user_info)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route("/update_profile", methods=["POST"])
+def save_img():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        username = payload["id"]
+        name_receive = request.form["name_give"]
+        date_receive = request.form["date_give"]
+        new_doc = {"full_name": name_receive, "tanggal_lahir": date_receive}
+        if "file_give" in request.files:
+            file = request.files["file_give"]
+            filename = secure_filename(file.filename)
+            extension = filename.split(".")[-1]
+            file_path = f"myassets/profile/{username}.{extension}"
+            file.save("./static/" + file_path)
+            new_doc["profile_pic"] = filename
+            new_doc["profile_pic_real"] = file_path
+        db.users.update_one({"username": payload["id"]}, {"$set": new_doc})
+        return jsonify({"result": "success", "msg": "Profile updated!"})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/changepassword', methods=['GET','POST'])
+def changepassword():
+    token_receive = request.cookies.get("mytoken")
+    if request.method == 'POST':
+        oldpw = request.form["old_password"]
+        newpw = request.form["new_password"]
+        oldpw_hash = hashlib.sha256(oldpw.encode("utf-8")).hexdigest()
+        newpw_hash = hashlib.sha256(newpw.encode("utf-8")).hexdigest()
+
+        result = db.users.find_one(
+            {
+                "password": oldpw_hash,
+            }
+        )
+
+        if result:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+
+            db.users.update_one({"username": payload["id"]}, {'$set': {'password': newpw_hash}})
+            return jsonify(
+                {
+                    "result": "success",
+                    "msg": "Password Telah Diupdate",
+                }
+            )  
+        else:
+            return jsonify(
+                {
+                    "result": "fail",
+                    "msg": "Password anda tidak cocok",
+                }
+            )
+        pass
+    
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]})
+        return render_template('changepw.html', active_page='changepw', user_info=user_info)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
 
 def get_user_role():
     token_receive = request.cookies.get("mytoken")

@@ -10,7 +10,7 @@ Account
     <h1>Acoount Profile</h1>
 </div>
 
-<div class="page-content"> 
+<div class="page-content">
     <section id="basic-horizontal-layouts">
         <div class="row match-height">
             <div class="col-md-4 col-12">
@@ -19,7 +19,8 @@ Account
                         <h4 class="card-title">Profile Picture</h4>
                     </div>
                     <div class="card-body d-flex justify-content-center">
-                        <img src="../static/myassets/profile/2.jpg" class="rounded-circle" alt="profile" style="width: 200px;">
+                        <img src="{{ url_for('static', filename=user_info.profile_pic_real) }}" class="rounded-circle" alt="profile"
+                            style="width: 200px;">
                     </div>
                 </div>
             </div>
@@ -30,62 +31,42 @@ Account
                     </div>
                     <div class="card-content">
                         <div class="card-body">
-                            <form class="form form-horizontal">
-                                <div class="form-body">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <label for="first-name-horizontal">NIM</label>
-                                        </div>
-                                        <div class="col-md-8 form-group">
-                                            <input type="text" class="form-control" name="nim"
-                                                 disabled>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="nama-horizontal">nama</label>
-                                        </div>
-                                        <div class="col-md-8 form-group">
-                                            <input type="text" id="email-horizontal" class="form-control" name="name-id"
-                                                placeholder="name">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="contact-info-horizontal">Tanggal Lahir</label>
-                                        </div>
-                                        <div class="col-md-8 form-group">
-                                            <input type="date" class="form-control mb-3 flatpickr-no-config" placeholder="Select date..">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="password-horizontal">Old Password</label>
-                                        </div>
-                                        <div class="col-md-8 form-group mb-4">
-                                            <input type="password" id="password-horizontal" class="form-control" name="password"
-                                                placeholder="Password">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="password-horizontal">New Password</label>
-                                        </div>
-                                        <div class="col-md-8 form-group mb-4">
-                                            <input type="password" id="password-horizontal" class="form-control" name="password"
-                                                placeholder="Password">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="password-horizontal">Confirm Password</label>
-                                        </div>
-                                        <div class="col-md-8 form-group mb-4">
-                                            <input type="password" id="password-horizontal" class="form-control" name="password"
-                                                placeholder="Password">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <label for="password-horizontal">Change Picture</label>
-                                        </div>
-                                        <div class="col-md-8 form-group mb-4">
-                                            <input type="file" class="form-control" id="inputGroupFile01">
-                                        </div>
-                                        <div class="col-sm-12 d-flex justify-content-start">
-                                            <button type="submit" class="btn btn-primary me-1 mb-1">Save</button>
-                                        </div>
+                            <div class="form-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label for="first-name-horizontal">NIM</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input type="text" class="form-control" name="nimaccount"
+                                            value="{{user_info.username}}" disabled>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="name-account">nama</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input type="text" id="name-account" class="form-control" name="name-account"
+                                            placeholder="name" value="{{user_info.full_name}}">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="contact-info-horizontal">Tanggal Lahir</label>
+                                    </div>
+                                    <div class="col-md-8 form-group">
+                                        <input type="date" id="date-account" value="{{user_info.tanggal_lahir}}" <input
+                                            type="date" id="date-account" value="{{user_info.tanggal_lahir}}"
+                                            class="form-control mb-3 flatpickr-no-config" placeholder="Select date..">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="password-horizontal">Change Picture</label>
+                                    </div>
+                                    <div class="col-md-8 form-group mb-4">
+                                        <input type="file" class="form-control" id="input-pic-account">
+                                    </div>
+                                    <div class="col-sm-12 d-flex justify-content-start">
+                                        <button id="updateaccount" type="submit"
+                                            class="btn btn-primary me-1 mb-1">Save</button>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -94,5 +75,35 @@ Account
         </div>
     </section>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('#updateaccount').click(function () {
+            let name = $('#name-account').val();
+            let date = $('#date-account').val();
+            let file = $("#input-pic-account")[0].files[0];
+            let form_data = new FormData();
+            form_data.append("file_give", file);
+            form_data.append("name_give", name);
+            form_data.append("date_give", date);
+            console.log(name, file, date, form_data);
+            $.ajax({
+                type: "POST",
+                url: "/update_profile",
+                data: form_data,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    if (response["result"] === "success") {
+                        alert(response["msg"]);
+                        window.location.reload();
+                    }
+                },
+            });
+
+        });
+    });
+</script>
 
 {% endblock %}

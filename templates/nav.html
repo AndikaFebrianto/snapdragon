@@ -122,6 +122,12 @@
                                 <span>Account</span>
                             </a>
                         </li>
+                        <li class="sidebar-item {{ 'active' if active_page == 'changepw' else '' }}">
+                            <a href="/changepassword" class='sidebar-link'>
+                                <i class="bi bi-person-fill-add"></i>
+                                <span>Change Password</span>
+                            </a>
+                        </li>
                         <li class="sidebar-item {{ 'active' if active_page == 'logout' else '' }}">
                             <a class='sidebar-link' onclick="sign_out()">
                                 <i class="bi bi-box-arrow-in-left"></i>
