@@ -155,7 +155,6 @@ Tambah Mahasiswa
                     }
                     $.each(data.hasil, function (index, mahasiswa) {
                         if (mahasiswa.username && mahasiswa.full_name) {
-                            test = mahasiswa
                             let baris = '<tr><td>' + mahasiswa.username + '</td><td>' + mahasiswa.full_name + '</td><td>' + `<a onclick="tambah(${index + 1})" class="btn btn-success btn-sm">Tambah</a>` + '</td></tr>';
                             let baris2 = '<tr class="d-none"><td>' + `<input type="hidden" id="getnim${index + 1}" class="form-control" value="${mahasiswa.username}">` + '</td><td>' + `<input type="hidden" id="idkelas" class="form-control" value="{{data._id}}">` + '</td><td>' + '' + '</td></tr>';
                             tabelBody.append(baris, baris2);

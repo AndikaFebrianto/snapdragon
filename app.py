@@ -446,6 +446,53 @@ def deletetmbhmhs(id):
     return jsonify({"result": "success"})
     # return redirect(url_for('mnjm_kelas'))
 
+@app.route('/manajemen-absensi')
+def mnjm_absen():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]})
+        matakuliah_list = db.matakuliah.find()
+        kelas_list = list(db.kelas.aggregate([
+            {
+                "$lookup": {
+                    "from": "matakuliah",
+                    "localField": "Kode_Matkul",
+                    "foreignField": "Kode_Matkul",
+                    "as": "info_matakuliah"
+                }
+            },
+            {
+                "$unwind": "$info_matakuliah"
+            },
+            {
+                "$project": {
+                    "Kode_Matkul": 1,
+                    "nip": 1,
+                    "Waktu": 1,
+                    "Ruang": 1,
+                    "Nama_Matkul": "$info_matakuliah.Nama_Matkul",
+                    "Jurusan": "$info_matakuliah.Jurusan"
+                }
+            }
+        ]))
+        return render_template('dosen/mnjmabsen.html', active_page="mnjm_absn" ,matakuliah_list=matakuliah_list, user_info=user_info, kelas_list=kelas_list)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/absensi-mahasiswa/<string:id>', methods=['POST'])
+def absenmhs(id): 
+    nim_receive = request.form['getnim']
+    nama_reveive = request.form['nama_absen']
+    pertemuan_receive = request.form['pertemuan_absen']
+    doc = {
+        "npm": nim_receive,
+        "username": nama_receive,
+        "pertemuan": pertemuan_receive,
+    }
+    db.absensi.insert_one(doc)
+    return jsonify({'result': 'success'})
+
 @app.route('/Acoount')
 def account():
     token_receive = request.cookies.get("mytoken")
