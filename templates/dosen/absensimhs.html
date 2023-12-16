@@ -1,64 +1,65 @@
 {% extends 'nav.html' %}
 
 {% block tittle %}
-Absensi Mahasiswa
+  Absensi Mahasiswa
 {% endblock %}
 
 {% block content %}
-<div class="page-heading">
+  <div class="page-heading">
     <h1>Absensi Mahasiswa</h1>
-</div>
-<section class="section">
+  </div>
+  <section class="section">
     <div class="row" id="table-bordered">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-content">
-                    <div class="card-body">
-                        <p class="card-text">Harap perhatikan informasi mengenai data <code>absensi mahasiswa</code> yang tersedia.
-                        </p>
-                    </div>
-                    <div class="table-responsive mx-4 mb-4">
-                        <table class="table table-bordered table-striped table-dark mb-0">
-                            <thead>
-                                <tr>
-                                    <th>NPM</th>
-                                    <th>Nama</th>
-                                    <th>Pertemuan ke 1</th>
-                                    <th>Pertemuan ke 2</th>
-                                    <th>Pertemuan ke 3</th>
-                                    <th>Pertemuan ke 4</th>
-                                    <th>Pertemuan ke 5</th>
-                                    <th>Pertemuan ke 6</th>
-                                    <th>Pertemuan ke 7</th>
-                                    <th>UTS</th>
-                                    <th>Pertemuan ke 9</th>
-                                    <th>Pertemuan ke 10</th>
-                                    <th>Pertemuan ke 11</th>
-                                    <th>Pertemuan ke 12</th>
-                                    <th>Pertemuan ke 13</th>
-                                    <th>Pertemuan ke 14</th>
-                                    <th>Pertemuan ke 15</th>
-                                    <th>UAS</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for user in dosen %}
-                                <tr>
-                                    <td>{{user['nomer_induk']}}</td>
-                                    <td>{{user['nama_lengkap']}}</td>
-                                    <td>{{user['pertemuan']}}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+      <div class="col-12">
+        <div class="card">
+          <div class="card-content">
+            <div class="card-header">
+              <a href="/manajemen-absensi" class="btn btn-secondary">Kembali</a>
             </div>
+            <div class="card-body">
+              <p class="card-text">
+                Harap perhatikan informasi mengenai data <code>absensi mahasiswa</code> yang tersedia.
+              </p>
+              <div class="table-responsive mx-4 mb-4">
+                <table class="table table-bordered table-striped table-dark mb-0">
+                  <thead>
+                    <tr>
+                      <th>NPM</th>
+                      <th>Nama</th>
+                      {% for i in range(1, 15) %}
+                        <th>Pertemuan ke {{ i }}</th>
+                      {% endfor %}
+                      <th>UTS</th>
+                      <th>UAS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for user in kls_mhs %}
+                      <tr>
+                        <td>{{ user['nim'] }}</td>
+                        <td>{{ user['fullname'] }}</td>
+                        {% for p in user['pertemuan'] %}
+                          <td>
+                            <input type="checkbox" id="pertemuan_{{ user['nim'] }}_{{ loop.index }}" name="pertemuan_{{ user['nim'] }}[]" value="{{ loop.index }}" {% if p %} checked {% endif %}>
+                            <label for="pertemuan_{{ user['nim'] }}_{{ loop.index }}"> Pertemuan {{ loop.index }}</label>
+                          </td>
+                        {% endfor %}
+                        <td><input type="checkbox" id="uts_{{ user['nim'] }}" name="uts_{{ user['nim'] }}" {% if user['uts'] %} checked {% endif %}></td>
+                        <td><input type="checkbox" id="uas_{{ user['nim'] }}" name="uas_{{ user['nim'] }}" {% if user['uas'] %} checked {% endif %}></td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <div class="card-body">
+                <button type="submit" class="btn btn-success me-1 mb-1" id="saveabsn">Submit</button>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</section>
+  </section>
 
-<script>
-</script>
-
+  <script></script>
 {% endblock %}
