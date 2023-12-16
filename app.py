@@ -64,7 +64,7 @@ def sign_in():
         return jsonify(
             {
                 "result": "fail",
-                "msg": "We could not find a user with that username/password combination",
+                "msg": "Your username or password does not match",
             }
         )
 
@@ -86,7 +86,9 @@ def mnjmdosen():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
         if user_info and user_info.get('role') in ['superuser']:
-            semua_dosen = db.users.find({'role': 'dosen'})
+            semua_dosen = list(db.users.find({'role': 'dosen'}))
+            for user in semua_dosen:
+                user['_id'] = str(user['_id'])
             return render_template("admin/mnjmdosen.html", dosen=semua_dosen, active_page="mnjm_dosen", user_info=user_info)
         else:
             return redirect(url_for("home"))
@@ -142,10 +144,11 @@ def editdosen(id):
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-@app.route('/deletedosen/<string:id>')
+@app.route('/deletedosen/<string:id>', methods=["POST"])
 def delete(id):
     db.users.delete_one({'_id': ObjectId(id)})
-    return redirect(url_for('mnjmdosen'))
+    return jsonify({"result": "success"})
+    # return redirect(url_for('mnjmdosen'))
 
 def get_user_role():
     token_receive = request.cookies.get("mytoken")
@@ -291,6 +294,8 @@ def mnjm_kelas():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
+        nip_user = user_info['username']
+        print(nip_user)
         matakuliah_list = db.matakuliah.find()
         kelas_list = list(db.kelas.aggregate([
             {
@@ -303,6 +308,11 @@ def mnjm_kelas():
             },
             {
                 "$unwind": "$info_matakuliah"
+            },
+            {
+                "$match": {
+                    "nip": nip_user
+                }
             },
             {
                 "$project": {
