@@ -42,7 +42,7 @@ Tambah Mahasiswa
                                     <td>{{user['id_ortu']}}</td>
                                     <td>{{user['fname_ortu']}}</td>
                                     <td>
-                                        <button onclick="deletetmbhmhsdosen('{{user[" _id"]}}')"
+                                        <button onclick="deletetmbhmhsdosen('{{user["_id"]}}')"
                                             class="btn icon btn-danger"><i class="fa-solid fa-trash"
                                                 title="Hapus"></i></button>
                                     </td>
@@ -162,6 +162,9 @@ Tambah Mahasiswa
                         if (response.success === true) {
                             Swal.fire("Added!", "Your file has been added!", "success").then((result) => { window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}"); });
                         }
+                        if(response.error == true){
+                            Swal.fire("error!", "the data already exists!", "error");
+                        }
                     }
                 });
             }
@@ -174,7 +177,6 @@ Tambah Mahasiswa
                 let tabelBody = $('#tabelHasil > tbody');
                 tabelBody.empty();
                 if (data.hasil && Array.isArray(data.hasil)) {
-                    console.log(data.hasil)
                     if (data.hasil.length == 0) {
                         tabelBody.append('<tr><td colspan="3">Data Data tidak ditemukan.</td></tr>');
                         return;

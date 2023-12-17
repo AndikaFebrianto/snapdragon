@@ -346,10 +346,11 @@ def savekelas():
 @app.route('/editkelas/<string:id>', methods=['GET', 'POST'])
 def editkelas(id):
     if request.method == 'POST':
-        time_receive = request.form['edit-waktu-matakuliah']
-        room_receive = request.form['edit-ruang-matakuliah']
+        time_receive = request.form['ewaktu']
+        room_receive = request.form['eruang']
+        day_receive = request.form['day']
 
-        db.kelas.update_one({'_id': ObjectId(id)}, {'$set': {'Waktu': time_receive, 'Ruang': room_receive}})
+        db.kelas.update_one({'_id': ObjectId(id)}, {'$set': {'Waktu': time_receive, 'Ruang': room_receive, 'Hari' : day_receive}})
         return jsonify({'result' : 'success'})
     
     token_receive = request.cookies.get("mytoken")
@@ -357,7 +358,9 @@ def editkelas(id):
         data = db.kelas.find_one({'_id': ObjectId(id)})
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
-        return render_template('dosen/editkelas.html', data=data, user_info=user_info ,active_page="mnjm_kls")
+        selected_day = data.get('Hari')
+
+        return render_template('dosen/editkelas.html', data=data, user_info=user_info ,active_page="mnjm_kls", selected_day=selected_day)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
@@ -374,7 +377,7 @@ def tambahklsmhs(id):
         nim_receive = request.form['getnim']
         idKelas_recive = request.form['idKelas']
         idKelas = ObjectId(idKelas_recive)
-        data = db.kelas_mhs.find_one({"nim": nim_receive})
+        data = db.kelas_mhs.find_one({"nim": nim_receive, "idKelas": idKelas})
         if data:
             return jsonify({'error': True, 'message': 'Data sudah ada'})
         else:
@@ -388,6 +391,7 @@ def tambahklsmhs(id):
     token_receive = request.cookies.get("mytoken")
     try:
         data = db.kelas.find_one({'_id': ObjectId(id)})
+        idc = ObjectId(id)
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
         kls_mhs = list(db.kelas_mhs.aggregate([
@@ -401,6 +405,11 @@ def tambahklsmhs(id):
             },
             {
                 "$unwind": "$info_mhs"
+            },
+            {
+                "$match": {
+                    "idKelas": idc
+                }
             },
             {
                 "$project": {
@@ -487,6 +496,7 @@ def absenmhs(id):
     token_receive = request.cookies.get("mytoken")
     try:
         data = db.kelas.find_one({'_id': ObjectId(id)})
+        idc = ObjectId(id)
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
         kls_mhs = list(db.kelas_mhs.aggregate([
@@ -500,6 +510,11 @@ def absenmhs(id):
             },
             {
                 "$unwind": "$info_mhs"
+            },
+            {
+                "$match": {
+                    "idKelas": idc
+                }
             },
             {
                 "$project": {
@@ -529,18 +544,19 @@ def absenmhs(id):
                 }
             }
         ]))
-        return render_template('dosen/absensimhs.html', active_page="mnjm_absen", user_info=user_info, data=data, kls_mhs=kls_mhs)
+        return render_template('dosen/absensimhs.html', active_page="mnjm_absen", user_info=user_info, data=data, kls_mhs=kls_mhs, id=id)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
 @app.route('/update_status', methods=['POST'])
 def update_status():
     nomer_induk = request.form['nim']
+    idabsensi = request.form['idabsensi']
     pertemuan = request.form['pertemuan']
     status = request.form['status']
 
     db.kelas_mhs.update_one(
-        {'nim': nomer_induk},
+        {'nim': nomer_induk, 'idKelas' : ObjectId(idabsensi)},
         {'$set': {f'pertemuan{pertemuan}': status}}
     )
 

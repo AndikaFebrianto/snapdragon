@@ -18,7 +18,7 @@ Absensi Mahasiswa
           </div>
           <div class="card-body">
             <p class="card-text">
-              Harap perhatikan dalam menginput data <code>absensi mahasiswa</code> yang tersedia.
+              Harap perhatikan dalam menginput data <code>absensi mahasiswa</code> yang tersedia. {{id}}
             </p>
             <div class="table-responsive mx-4 mb-4">
               <table class="table table-bordered table-striped table-dark mb-0">
@@ -63,19 +63,19 @@ Absensi Mahasiswa
   function updateStatus(checkboxId, nim, pertemuan) {
     var checkboxElem = $("#"+checkboxId);
     var status = checkboxElem.is(':checked') ? 'Hadir' : 'Tidak Hadir';
+    var idabsensi = "{{id}}";
 
-    console.log(checkboxElem)
-    console.log(status)
     $.ajax({
       url: '/update_status',
       data: {
         'nim': nim,
         'pertemuan': pertemuan,
-        'status': status
+        'status': status,
+        'idabsensi' : idabsensi,
       },
       type: 'POST',
       success: function (response) {
-        console.log(response);
+        Swal.fire("Update!", "Your file has been updated!", "success");
       },
       error: function (error) {
         console.log(error);

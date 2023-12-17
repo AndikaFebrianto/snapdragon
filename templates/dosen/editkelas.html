@@ -62,6 +62,21 @@ Manajemen Kelas
                     </div>
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
+                            <select class="form-select" id="editday">
+                                <option selected>Pilih Hari</option>
+                                <option value="senin">Senin</option>
+                                <option value="selasa">Selasa</option>
+                                <option value="rabu">Rabu</option>
+                                <option value="kamis">Kamis</option>
+                                <option value="jumat">Jumat</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="edit-dosen">Nama Dosen</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="form-group has-icon-left">
                             <div class="position-relative">
                                 <input type="text" class="form-control" placeholder="edit dosen"
                                     id="edit-KDM" value="{{user_info.full_name}}" disabled>
@@ -72,9 +87,7 @@ Manajemen Kelas
                         </div>
                     </div>
                     <div class="col-12 d-flex justify-content-end">
-                        <button onclick="editkelasdosen('{{data["_id"]}}')"
-                            class="btn icon btn-danger"><i class="fa-solid fa-trash"
-                                title="Hapus"></i></button>
+                        <button id="submitsave" class="btn icon btn-success">save</button>
                     </div>
                 </div>
             </div>
@@ -82,10 +95,12 @@ Manajemen Kelas
 </div>
 
 <script>
-    $(document).ready(function () {
+    $(document).ready(function () { 
+        $("#editday").val('{{selected_day}}');
         $("#submitsave").click(function () {
             let ewaktu = $("#edit-waktu-dosen").val();
             let eruang = $("#edit-ruang-dosen").val();
+            let day = $("#editday").val();
             if (ewaktu == "" || eruang == "") {
                 swal.fire({
                     title: "Incomplete data",
@@ -105,10 +120,11 @@ Manajemen Kelas
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "POST",
-                            url: "/editkelas/{{ data._id }}",
+                            url: "/editkelas/{{data._id }}",
                             data: {
                                 ewaktu: ewaktu,
                                 eruang: eruang,
+                                day : day,
                             },
                             success: function (response) {
                                 if (response.result == 'success') {
@@ -121,35 +137,6 @@ Manajemen Kelas
             }
         });
     });
-
-    function editkelasdosen(id) {
-        ewaktu = $('#getnim').val();
-        idKelas = $('#idkelas').val();
-
-        $.ajax({
-            type: "POST",
-            url: "/tambah-kelas-mahasiswa/{{data._id}}",
-            data: {
-                ewaktu: ewaktu,
-                idKelas: idKelas,
-            },
-            success: function (response) {
-                if (response.success === true) {
-                    Swal.fire({
-                        position: "top",
-                        icon: "success",
-                        title: "Data berhasil dimasukan!",
-                        showConfirmButton: false,
-                        timer: 1500
-                      });
-                    window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}");
-                }
-                if (response.error === true) {
-                    alert(response.message);
-                }
-            }
-        });
-    }
 </script>
 
 {% endblock %}
