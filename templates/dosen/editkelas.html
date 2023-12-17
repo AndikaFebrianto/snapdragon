@@ -15,7 +15,7 @@ Manajemen Kelas
 
     </div>
     <div class="card-body">
-        <form class="form form-horizontal" action="/editkelas/{{ data._id }}" method="POST">
+        <form class="form form-horizontal">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-4">
@@ -73,12 +73,54 @@ Manajemen Kelas
                         </div>
                     </div>
                     <div class="col-12 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-success me-1 mb-1">Submit</button>
+                        <button id="submitsave" class="btn btn-success me-1 mb-1">Submit</button>
                     </div>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("#submitsave").click(function () {
+            let ewaktu = $("#edit-waktu").val();
+            let eruang = $("#edit-ruang").val();
+            if (ewaktu == "" || eruang == "") {
+                swal.fire({
+                    title: "Incomplete data",
+                    text: "Please fill in the data correctly.",
+                    icon: "warning",
+                });
+            } else {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Your data will be updated!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/editkelas/{{ data._id }}",
+                            data: {
+                                namematkul: namematkul,
+                                jurusan: jurusan,
+                            },
+                            success: function (response) {
+                                if (response.result == 'success') {
+                                    Swal.fire("Update!", "Your file has been updated!", "success").then((result) => { window.location.replace("/manajemen-kelas"); });
+                                }
+                            },
+                        });
+                    }
+                })
+            }
+        });
+    });
+</script>
 
 {% endblock %}
