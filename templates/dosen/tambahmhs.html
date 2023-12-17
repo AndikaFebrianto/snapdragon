@@ -42,7 +42,7 @@ Tambah Mahasiswa
                                     <td>{{user['id_ortu']}}</td>
                                     <td>{{user['fname_ortu']}}</td>
                                     <td>
-                                        <button onclick="deletetmbh('{{user["_id"]}}')" class="btn icon btn-danger"><i
+                                        <button onclick="deletetmbhmhsdosen('{{user["_id"]}}')" class="btn icon btn-danger"><i
                                                 class="fa-solid fa-trash" title="Hapus"></i></button>
                                     </td>
                                 </tr>
@@ -106,18 +106,35 @@ Tambah Mahasiswa
 </div>
 
 <script>
-    function deletetmbh(id) {
-        $.ajax({
-            type: "POST",
-            url: "/deletetmbhmhs/" + id,
-            success: function (response) {
-                if(response.result == "success"){
-                    alert('data berhasil dihapus');
-                    window.location.reload();
-                }
+    function deletetmbhmhsdosen(id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "/deletetmbhmhs/" + id,
+                    success: function (response) {
+                        if (response.result == "success") {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your file has been deleted.",
+                                icon: "success"
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
             }
         });
-    }
+    };
     
     function tambah(index) {
         getnim = $(`#getnim${index}`).val();
