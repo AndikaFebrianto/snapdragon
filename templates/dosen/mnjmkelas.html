@@ -39,13 +39,15 @@ Manajemen Kelas
                                 {% for kelas in kelas_list %}
                                 <tr>
                                     <td>{{kelas['Kode_Matkul']}}</td>
-                                    <td><a href="/tambah-kelas-mahasiswa/{{kelas._id}}">{{kelas['Nama_Matkul']}}</a></td>
+                                    <td><a href="/tambah-kelas-mahasiswa/{{kelas._id}}">{{kelas['Nama_Matkul']}}</a>
+                                    </td>
                                     <td>{{kelas['Waktu']}}</td>
                                     <td>{{kelas['Ruang']}}</td>
                                     <td>{{user_info['full_name']}}</td>
                                     <td>
-                                        <a href="/editkelas/{{ kelas._id }}" class="btn icon btn-info"><i class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
-                                        <button onclick="deletekelasdosen('{{kelas["_id"]}}')"
+                                        <a href="/editkelas/{{ kelas._id }}" class="btn icon btn-info"><i
+                                                class="fa-solid fa-pen-to-square text-white title"="edit"></i></a>
+                                        <button onclick="deletekelasdosen('{{kelas[" _id"]}}')"
                                             class="btn icon btn-danger"><i class="fa-solid fa-trash"
                                                 title="Hapus"></i></button>
                                     </td>
@@ -60,67 +62,66 @@ Manajemen Kelas
     </div>
 </section>
 
-<div class="modal fade" id="tambahkelas" data-bs-backdrop="static" data-bs-keyboard="false"
-tabindex="-1" aria-labelledby="tambahkelasLabel" aria-hidden="true">
-<div class="modal-dialog">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h1 class="modal-title fs-5" id="tambahdosenLabel">Tambah kelas</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <div class="form-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="form-group">
-                            <label for="KDM">Mata Kuliah</label>
-                            <select class="form-select" id="select-matkull" name="select-matkull" aria-label="Default select example">
-                                <option value="">Pilih Mata Kuliah</option>
-                                {% for mk in matakuliah_list %}
-                                    <option value="{{ mk.Kode_Matkul }}">{{  mk.Nama_Matkul }}</option>
-                                {% endfor %}
-                              </select>
-                            <p id="help-matkul1-input" class="mt-2"></p>
+<div class="modal fade" id="tambahkelas" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="tambahkelasLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="tambahdosenLabel">Tambah kelas</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="KDM">Mata Kuliah</label>
+                                <select class="form-select" id="select-matkull" name="select-matkull"
+                                    aria-label="Default select example">
+                                    <option value="">Pilih Mata Kuliah</option>
+                                    {% for mk in matakuliah_list %}
+                                    <option value="{{ mk.Kode_Matkul }}">{{ mk.Nama_Matkul }}</option>
+                                    {% endfor %}
+                                </select>
+                                <p id="help-matkul1-input" class="mt-2"></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="form-group">
-                            <label for="ftime">Waktu</label>
-                            <input type="text" id="ftime" class="form-control" name="ftime"
-                                placeholder="example 1/2/3" required>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="ftime">Waktu</label>
+                                <input type="text" id="ftime" class="form-control" name="ftime"
+                                    placeholder="example 1/2/3" required>
+                            </div>
+                            <p id="help-ftime-input" class="mt-2"></p>
                         </div>
-                        <p id="help-ftime-input" class="mt-2"></p>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="form-group">
-                            <label for="fruang">Ruang</label>
-                            <input type="text" id="fruang" class="form-control" name="fruang"
-                                placeholder="ruang" required>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="fruang">Ruang</label>
+                                <input type="text" id="fruang" class="form-control" name="fruang" placeholder="ruang"
+                                    required>
+                            </div>
+                            <p id="help-fruang-input" class="mt-2"></p>
                         </div>
-                        <p id="help-fruang-input" class="mt-2"></p>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <div class="form-group">
-                            <label for="fruang">Dosen</label>
-                            <input type="text" id="fnmedosen1" class="form-control" name="fnmedosen1"
-                                placeholder="Dosen" value="{{user_info.full_name}}" required disabled>
-                            <input type="hidden" id="iddosen1" class="form-control" name="iddosen1"
-                                value="{{user_info.username}}" required disabled>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
+                                <label for="fruang">Dosen</label>
+                                <input type="text" id="fnmedosen1" class="form-control" name="fnmedosen1"
+                                    placeholder="Dosen" value="{{user_info.full_name}}" required disabled>
+                                <input type="hidden" id="iddosen1" class="form-control" name="iddosen1"
+                                    value="{{user_info.username}}" required disabled>
+                            </div>
+                            <p id="help-fruang-input" class="mt-2"></p>
                         </div>
-                        <p id="help-fruang-input" class="mt-2"></p>
-                    </div>
-                    <div class="col-12 d-flex justify-content-end mt-4">
-                        <button type="submit" class="btn btn-success me-1 mb-1"
-                            id="savekelas">Submit</button>
-                        <button type="button" class="btn btn-light-secondary me-1 mb-1"
-                            data-bs-dismiss="modal">Close</button>
+                        <div class="col-12 d-flex justify-content-end mt-4">
+                            <button type="submit" class="btn btn-success me-1 mb-1" id="savekelas">Submit</button>
+                            <button type="button" class="btn btn-light-secondary me-1 mb-1"
+                                data-bs-dismiss="modal">Close</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <script>
@@ -184,24 +185,31 @@ tabindex="-1" aria-labelledby="tambahkelasLabel" aria-hidden="true">
                 return;
             }
 
-            $.ajax({
-                type: "POST",
-                url: "/manajemen-kelas/savekelas",
-                data: {
-                    matkul: matkul,
-                    ftime: ftime,
-                    fruang: fruang,
-                    dosen: dosen,
-                },
-                success: function (response) {
-                    Swal.fire({
-                        position: "top",
-                        icon: "success",
-                        title: "Data berhasil disimpan",
-                        showConfirmButton: false,
-                        timer: 1500
-                      });
-                    window.location.replace("/manajemen-kelas");
+            Swal.fire({
+                title: "Are you sure?",
+                text: "this data will be added!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, add it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/manajemen-kelas/savekelas",
+                        data: {
+                            matkul: matkul,
+                            ftime: ftime,
+                            fruang: fruang,
+                            dosen: dosen,
+                        },
+                        success: function (response) {
+                            if (response.result == 'success'){
+                                Swal.fire("class data has been successfully added", "", "success").then((result) => { window.location.replace("/manajemen-kelas"); });
+                            }
+                        }
+                    });
                 }
             });
         });

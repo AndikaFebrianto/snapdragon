@@ -42,8 +42,9 @@ Tambah Mahasiswa
                                     <td>{{user['id_ortu']}}</td>
                                     <td>{{user['fname_ortu']}}</td>
                                     <td>
-                                        <button onclick="deletetmbhmhsdosen('{{user["_id"]}}')" class="btn icon btn-danger"><i
-                                                class="fa-solid fa-trash" title="Hapus"></i></button>
+                                        <button onclick="deletetmbhmhsdosen('{{user[" _id"]}}')"
+                                            class="btn icon btn-danger"><i class="fa-solid fa-trash"
+                                                title="Hapus"></i></button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -135,41 +136,43 @@ Tambah Mahasiswa
             }
         });
     };
-    
+
     function tambah(index) {
         getnim = $(`#getnim${index}`).val();
         idKelas = $('#idkelas').val();
 
-        $.ajax({
-            type: "POST",
-            url: "/tambah-kelas-mahasiswa/{{data._id}}",
-            data: {
-                getnim: getnim,
-                idKelas: idKelas,
-            },
-            success: function (response) {
-                if (response.success === true) {
-                    Swal.fire({
-                        position: "top",
-                        icon: "success",
-                        title: "Data berhasil dimasukan!",
-                        showConfirmButton: false,
-                        timer: 1500
-                      });
-                    window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}");
-                }
-                if (response.error === true) {
-                    alert(response.message);
-                }
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Your data will be added!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, added it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "/tambah-kelas-mahasiswa/{{data._id}}",
+                    data: {
+                        getnim: getnim,
+                        idKelas: idKelas,
+                    },
+                    success: function (response) {
+                        if (response.success === true) {
+                            Swal.fire("Added!", "Your file has been added!", "success").then((result) => { window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}"); });
+                        }
+                    }
+                });
             }
-        });
+        })
     }
     $(document).ready(function () {
         $('#carimhs').click(function () {
             let carimahasiswa = $('#carimahasiswa').val();
             $.post('/carimahasiswa', { searchValue: carimahasiswa }, function (data) {
                 let tabelBody = $('#tabelHasil > tbody');
-                tabelBody.empty();  
+                tabelBody.empty();
                 if (data.hasil && Array.isArray(data.hasil)) {
                     console.log(data.hasil)
                     if (data.hasil.length == 0) {

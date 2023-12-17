@@ -50,8 +50,8 @@ Change Password
                                     </div>
                                     <div class="col-md-8 form-group">
                                         <div class="input-group">
-                                            <input type="password" id="newpaswword" class="form-control" name="newpaswword"
-                                                placeholder="New Password">
+                                            <input type="password" id="newpaswword" class="form-control"
+                                                name="newpaswword" placeholder="New Password">
                                             <button id="showpasswordnew" class="input-group-text"><i
                                                     class="fa fa-eye-slash"></i></button>
                                         </div>
@@ -115,30 +115,40 @@ Change Password
             let newPassword = $("#newpaswword").val();
             let confirmPassword = $("#newpaswword1").val();
             if (oldPassword == "" || newPassword == "" || confirmPassword == "") {
-                alert("Please fill all the fields");
+                Swal.fire("error!", "Please fill all the fields!", "error");
             } else if (newPassword != confirmPassword) {
-                alert("New password and confirm password do not match");
+                Swal.fire("error!", "New password and confirm password do not match!", "error");
             } else {
-                $.ajax({
-                    url: "/changepassword",
-                    type: "POST",
-                    data: {
-                        old_password: oldPassword,
-                        new_password: newPassword
-                    },
-                    success: function (response) {
-                        if (response.result == "fail") {
-                            alert(response.msg);
-                        }
-                        if (response.result == "success") {
-                            alert(response.msg);
-                            window.location.reload();
-                        }
+
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Your data will be updated!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "/changepassword",
+                            type: "POST",
+                            data: {
+                                old_password: oldPassword,
+                                new_password: newPassword
+                            },
+                            success: function (response) {
+                                if (response.result == "fail") {
+                                    Swal.fire("error!", "your password is incorrect!", "error").then((result) => { window.location.reload(); });
+                                }
+                                if (response.result == "success") {
+                                    Swal.fire("Update!", "Your password has been updated!", "success").then((result) => { window.location.reload(); });
+                                }
+                            }
+                        });
                     }
                 });
             }
-
-
         });
     });
 </script>

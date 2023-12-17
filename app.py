@@ -353,11 +353,11 @@ def savekelas():
 @app.route('/editkelas/<string:id>', methods=['GET', 'POST'])
 def editkelas(id):
     if request.method == 'POST':
-        time_receive = request.form['edit-waktu-matakuliah']
-        room_receive = request.form['edit-ruang-matakuliah']
+        time_receive = request.form['ewaktu']
+        room_receive = request.form['eruang']
 
         db.kelas.update_one({'_id': ObjectId(id)}, {'$set': {'Waktu': time_receive, 'Ruang': room_receive}})
-        return redirect(url_for('mnjm_kelas'))
+        return jsonify({'result' : 'success'})
     
     token_receive = request.cookies.get("mytoken")
     try:
@@ -389,7 +389,7 @@ def tambahklsmhs(id):
             user_info = db.users.find_one({'username':payload.get('id')})
             pertemuan = {f'pertemuan{i}': 'Tidak Hadir' for i in range(1, 17)}
             db.kelas_mhs.insert_one({'idKelas': idKelas, 'username' : user_info['username'], 'nim': nim_receive, **pertemuan})
-            return jsonify({'success': True, 'message': 'Data berhasil dimasukkan'})
+            return jsonify({'success': True})
 
     
     token_receive = request.cookies.get("mytoken")
@@ -607,14 +607,12 @@ def changepassword():
             return jsonify(
                 {
                     "result": "success",
-                    "msg": "Password Telah Diupdate",
                 }
             )  
         else:
             return jsonify(
                 {
                     "result": "fail",
-                    "msg": "Password anda tidak cocok",
                 }
             )
         pass
