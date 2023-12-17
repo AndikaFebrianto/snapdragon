@@ -364,7 +364,6 @@ def editkelas(id):
         data = db.kelas.find_one({'_id': ObjectId(id)})
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
-        # kelas = db.kelas.find()
         return render_template('dosen/editkelas.html', data=data, user_info=user_info ,active_page="mnjm_kls")
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
