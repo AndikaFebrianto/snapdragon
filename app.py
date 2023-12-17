@@ -24,8 +24,7 @@ def home():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]},)
-        role = user_info.get('role', 'user')
-        return render_template('dashboard.html', user_info=user_info, active_page='dashboard', role=role)
+        return redirect(url_for("dashboard"))
     except jwt.ExpiredSignatureError:
         return redirect(url_for("login", msg="Your token has expired"))
     except jwt.exceptions.DecodeError:
@@ -73,9 +72,13 @@ def dashboard():
     token_receive = request.cookies.get("mytoken")
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
-        user_info = db.users.find_one({"username": payload["id"]},)
+        user_info = db.users.find_one({"username": payload["id"]})
+        user_kls = db.kelas_mhs.count_documents({"username": user_info['username']})
         role = user_info.get('role', 'user')
-        return render_template('dashboard.html', active_page='dashboard', role=role)
+        count_mahasiswa = db.users.count_documents({'role': 'mahasiswa'})
+        count_dosen = db.users.count_documents({'role': 'dosen'})
+        count_matkul = db.matakuliah.count_documents({})
+        return render_template('dashboard.html', user_info=user_info, active_page='dashboard', role=role, count_mahasiswa=count_mahasiswa, count_dosen=count_dosen, count_matkul=count_matkul, user_kls=user_kls)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
     
@@ -148,7 +151,6 @@ def editdosen(id):
 def delete(id):
     db.users.delete_one({'_id': ObjectId(id)})
     return jsonify({"result": "success"})
-    # return redirect(url_for('mnjmdosen'))
 
 def get_user_role():
     token_receive = request.cookies.get("mytoken")
@@ -216,7 +218,6 @@ def editmhs(id):
         db.users.update_one({'_id': ObjectId(id)}, {'$set': {'full_name': fname_receive, 'tanggal_lahir': tl_receive, 'gender': gender_receive, 'fname_ortu' : fnameortu_receive}})
         return jsonify({'result': 'success'})
 
-    
     token_receive = request.cookies.get("mytoken")
     try:
         data = db.users.find_one({'_id': ObjectId(id)})
@@ -387,7 +388,8 @@ def tambahklsmhs(id):
         else:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
             user_info = db.users.find_one({'username':payload.get('id')})
-            db.kelas_mhs.insert_one({'idKelas': idKelas, 'username' : user_info['username'], 'nim': nim_receive})
+            pertemuan = {f'pertemuan{i}': 'Tidak Hadir' for i in range(1, 17)}
+            db.kelas_mhs.insert_one({'idKelas': idKelas, 'username' : user_info['username'], 'nim': nim_receive, **pertemuan})
             return jsonify({'success': True, 'message': 'Data berhasil dimasukkan'})
 
     
@@ -447,7 +449,6 @@ def carimhs():
 def deletetmbhmhs(id):
     db.kelas_mhs.delete_one({'_id': ObjectId(id)})
     return jsonify({"result": "success"})
-    # return redirect(url_for('mnjm_kelas'))
 
 @app.route('/manajemen-absensi')
 def mnjm_absen():
@@ -455,6 +456,7 @@ def mnjm_absen():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
+        nip_user = user_info['username']
         matakuliah_list = db.matakuliah.find()
         kelas_list = list(db.kelas.aggregate([
             {
@@ -469,6 +471,11 @@ def mnjm_absen():
                 "$unwind": "$info_matakuliah"
             },
             {
+                "$match": {
+                    "nip": nip_user
+                }
+            },
+            {
                 "$project": {
                     "Kode_Matkul": 1,
                     "nip": 1,
@@ -479,22 +486,73 @@ def mnjm_absen():
                 }
             }
         ]))
-        return render_template('dosen/mnjmabsen.html', active_page="mnjm_absn" ,matakuliah_list=matakuliah_list, user_info=user_info, kelas_list=kelas_list)
+        return render_template('dosen/mnjmabsen.html', active_page="mnjm_absen" ,matakuliah_list=matakuliah_list, user_info=user_info, kelas_list=kelas_list)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-@app.route('/absensi-mahasiswa/<string:id>', methods=['POST'])
-def absenmhs(id): 
-    nim_receive = request.form['getnim']
-    nama_reveive = request.form['nama_absen']
-    pertemuan_receive = request.form['pertemuan_absen']
-    doc = {
-        "npm": nim_receive,
-        "username": nama_receive,
-        "pertemuan": pertemuan_receive,
-    }
-    db.absensi.insert_one(doc)
-    return jsonify({'result': 'success'})
+@app.route('/absensi-mahasiswa/<string:id>')
+def absenmhs(id):
+    token_receive = request.cookies.get("mytoken")
+    try:
+        data = db.kelas.find_one({'_id': ObjectId(id)})
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        kls_mhs = list(db.kelas_mhs.aggregate([
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "nim",
+                    "foreignField": "username",
+                    "as": "info_mhs"
+                }
+            },
+            {
+                "$unwind": "$info_mhs"
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "fullname": "$info_mhs.full_name", 
+                    "nim": "$info_mhs.username",
+                    "id_ortu": "$info_mhs.id_ortu",
+                    "fname_ortu": "$info_mhs.fname_ortu",
+                    "pertemuan": { "$concatArrays": [ 
+                        [{"status": "$pertemuan1"}], 
+                        [{"status": "$pertemuan2"}], 
+                        [{"status": "$pertemuan3"}], 
+                        [{"status": "$pertemuan4"}], 
+                        [{"status": "$pertemuan5"}], 
+                        [{"status": "$pertemuan6"}], 
+                        [{"status": "$pertemuan7"}], 
+                        [{"status": "$pertemuan8"}], 
+                        [{"status": "$pertemuan9"}], 
+                        [{"status": "$pertemuan10"}], 
+                        [{"status": "$pertemuan11"}], 
+                        [{"status": "$pertemuan12"}], 
+                        [{"status": "$pertemuan13"}], 
+                        [{"status": "$pertemuan14"}], 
+                        [{"status": "$pertemuan15"}], 
+                        [{"status": "$pertemuan16"}] 
+                    ]} 
+                }
+            }
+        ]))
+        return render_template('dosen/absensimhs.html', active_page="mnjm_absen", user_info=user_info, data=data, kls_mhs=kls_mhs)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/update_status', methods=['POST'])
+def update_status():
+    nomer_induk = request.form['nim']
+    pertemuan = request.form['pertemuan']
+    status = request.form['status']
+
+    db.kelas_mhs.update_one(
+        {'nim': nomer_induk},
+        {'$set': {f'pertemuan{pertemuan}': status}}
+    )
+
+    return 'Success', 200
 
 @app.route('/Acoount')
 def account():

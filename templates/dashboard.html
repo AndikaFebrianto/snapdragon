@@ -8,11 +8,14 @@ Dashboard
 <div class="page-heading">
     <h1>Dashboard</h1>
 </div>
-{% if role == 'superuser' %}
+
 <div class="page-content">
+    <p class="card-text">Hallo, {{user_info['full_name']}}<br> Anda bisa melihat <code> informasi </code> yang tersedia.
+    </p>
     <section class="row">
         <div class="col-12 col-lg-9">
             <div class="row">
+                {% if role == 'superuser' %}
                 <div class="col-6 col-lg-3 col-md-6">
                     <div class="card">
                         <div class="card-body px-4 py-4-5">
@@ -24,7 +27,7 @@ Dashboard
                                 </div>
                                 <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                     <h6 class="text-muted font-semibold">Dosen</h6>
-                                    <h6 class="font-extrabold mb-0">112.000</h6>
+                                    <h6 class="font-extrabold mb-0">{{count_dosen}}</h6>
                                 </div>
                             </div>
                         </div>
@@ -41,7 +44,7 @@ Dashboard
                                 </div>
                                 <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                     <h6 class="text-muted font-semibold">Mahasiswa</h6>
-                                    <h6 class="font-extrabold mb-0">112.000</h6>
+                                    <h6 class="font-extrabold mb-0">{{count_mahasiswa}}</h6>
                                 </div>
                             </div>
                         </div>
@@ -58,7 +61,61 @@ Dashboard
                                 </div>
                                 <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
                                     <h6 class="text-muted font-semibold">Mata Kuliah</h6>
-                                    <h6 class="font-extrabold mb-0">112.000</h6>
+                                    <h6 class="font-extrabold mb-0">{{count_matkul}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if role == 'dosen' %}
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body px-4 py-4-5">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div class="box-icon purple">
+                                        <i class="fa-solid fa-graduation-cap"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Mahasiswa</h6>
+                                    <h6 class="font-extrabold mb-0">{{count_mahasiswa }}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body px-4 py-4-5">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-12 col-xl-12 col-xxl-5 d-flex justify-content-start ">
+                                    <div class="box-icon skyblue">
+                                        <i class="fa-solid fa-user-graduate"></i>
+                                    </div>
+                                </div>
+                                <div class="col-md-8 col-lg-12 col-xl-12 col-xxl-7">
+                                    <h6 class="text-muted font-semibold">Kelas</h6>
+                                    <h6 class="font-extrabold mb-0">{{user_kls}}</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="col-12 col-lg-3">
+                    <div class="card">
+                        <div class="card-body py-4 px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar avatar-xl">
+                                    <img src="{{ url_for('static', filename=user_info.profile_pic_real) }}"
+                                        alt="Face 1">
+                                </div>
+                                <div class="ms-3 name">
+                                    <h5 class="font-bold">{{user_info['full_name']}}</h5>
+                                    <h6 class="text-muted mb-0">@{{user_info['username']}}</h6>
                                 </div>
                             </div>
                         </div>
@@ -69,6 +126,7 @@ Dashboard
     </section>
 </div>
 
-{% endif %}
+
+
 
 {% endblock %}

@@ -1,68 +1,87 @@
 {% extends 'nav.html' %}
 
 {% block tittle %}
-  Absensi Mahasiswa
+Absensi Mahasiswa
 {% endblock %}
 
 {% block content %}
-  <div class="page-heading">
-    <h1>Absensi Mahasiswa</h1>
-  </div>
-  <section class="section">
-    <div class="row" id="table-bordered">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-content">
-            <div class="card-header">
-              <a href="/manajemen-absensi" class="btn btn-secondary">Kembali</a>
-            </div>
-            <div class="card-body">
-              <p class="card-text">
-                Harap perhatikan informasi mengenai data <code>absensi mahasiswa</code> yang tersedia.
-              </p>
-              <div class="table-responsive mx-4 mb-4">
-                <table class="table table-bordered table-striped table-dark mb-0">
-                  <thead>
-                    <tr>
-                      <th>NPM</th>
-                      <th>Nama</th>
-                      {% for i in range(1, 15) %}
-                        <th>Pertemuan ke {{ i }}</th>
-                      {% endfor %}
-                      <th>UTS</th>
-                      <th>UAS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for user in kls_mhs %}
-                      <tr>
-                        <td>{{ user['nim'] }}</td>
-                        <td>{{ user['fullname'] }}</td>
-                        {% for p in user['pertemuan'] %}
-                          <td>
-                            <input type="checkbox" id="pertemuan_{{ user['nim'] }}_{{ loop.index }}" name="pertemuan_{{ user['nim'] }}[]" value="{{ loop.index }}" {% if p %} checked {% endif %}>
-                            <label for="pertemuan_{{ user['nim'] }}_{{ loop.index }}"> Pertemuan {{ loop.index }}</label>
-                          </td>
-                        {% endfor %}
-                        <td><input type="checkbox" id="uts_{{ user['nim'] }}" name="uts_{{ user['nim'] }}" {% if user['uts'] %} checked {% endif %}></td>
-                        <td><input type="checkbox" id="uas_{{ user['nim'] }}" name="uas_{{ user['nim'] }}" {% if user['uas'] %} checked {% endif %}></td>
-                      </tr>
+<div class="page-heading">
+  <h1>Absensi Mahasiswa</h1>
+</div>
+<section class="section">
+  <div class="row" id="table-bordered">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-content">
+          <div class="card-header">
+            <a href="/manajemen-absensi" class="btn btn-secondary">Kembali</a>
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              Harap perhatikan dalam menginput data <code>absensi mahasiswa</code> yang tersedia.
+            </p>
+            <div class="table-responsive mx-4 mb-4">
+              <table class="table table-bordered table-striped table-dark mb-0">
+                <thead>
+                  <tr>
+                    <th>NPM</th>
+                    <th>Nama</th>
+                    {% for i in range(1, 15) %}
+                      <th>M {{ i }}</th>
                     {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-              <div class="card-body">
-                <button type="submit" class="btn btn-success me-1 mb-1" id="saveabsn">Submit</button>
-              </div>
-              <div class="card-body">
-                <button type="submit" class="btn btn-success me-1 mb-1" id="saveabsn">save</button>
-              </div>
+                    <th>UTS</th>
+                    <th>UAS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for user in kls_mhs %}
+                  <tr>
+                    <td>{{user['nim']}}</td>
+                    <td>{{user['fullname']}}</td>
+                    {% for pertemuan in range(1, 17) %}
+                    <td>
+                      <div class="d-flex justify-content-center">
+                        <input type="checkbox" id="pertemuan{{pertemuan}}_{{user['nim']}}"
+                          onchange="updateStatus(this.id, '{{user['nim']}}', {{pertemuan}})" {% if
+                          user['pertemuan'][pertemuan-1]['status']=='Hadir' %} checked {% endif %}>
+                      </div>
+                    </td>
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <script></script>
+<script>
+  function updateStatus(checkboxId, nim, pertemuan) {
+    var checkboxElem = $("#"+checkboxId);
+    var status = checkboxElem.is(':checked') ? 'Hadir' : 'Tidak Hadir';
+
+    console.log(checkboxElem)
+    console.log(status)
+    $.ajax({
+      url: '/update_status',
+      data: {
+        'nim': nim,
+        'pertemuan': pertemuan,
+        'status': status
+      },
+      type: 'POST',
+      success: function (response) {
+        console.log(response);
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  }
+
+</script>
 {% endblock %}
