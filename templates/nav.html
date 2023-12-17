@@ -15,7 +15,6 @@
 
     <link rel="stylesheet" href="../static/assets/compiled/css/app.css">
     <link rel="stylesheet" href="../static/assets/compiled/css/app-dark.css">
-    <!-- <link rel="stylesheet" href="../static/assets/compiled/css/iconly.css"> -->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
@@ -176,15 +175,7 @@
                 showDenyButton: true,
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        position: "top-end",
-                        icon: "success",
-                        text: "you have successfully logged out!",
-                        showConfirmButton: false,
-                        timer: 4500
-                    });
-                    $.removeCookie('mytoken', { path: '/' });
-                    window.location.href = "/login";
+                    Swal.fire("SignOut!", "You have successfully logged out of your account!", "success").then((result) => { $.removeCookie('mytoken', { path: '/' }); window.location.href = "/login";});
                 } else if (result.isDenied) {
                     Swal.fire("you didn't log out", "", "error");
                 }

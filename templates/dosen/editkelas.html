@@ -15,7 +15,6 @@ Manajemen Kelas
 
     </div>
     <div class="card-body">
-        <form class="form form-horizontal">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-4">
@@ -38,7 +37,7 @@ Manajemen Kelas
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Waktu Kelas" name="edit-waktu-matakuliah" id="edit-waktu" value="{{data.Waktu}}">
+                                <input type="text" class="form-control" placeholder="Waktu Kelas" name="edit-waktu-matakuliah" id="edit-waktu-dosen" value="{{data.Waktu}}">
                                 <div class="form-control-icon">
                                     <i class="bi bi-person"></i>
                                 </div>
@@ -51,7 +50,7 @@ Manajemen Kelas
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Ruang kelas" name="edit-ruang-matakuliah" id="edit-ruang" value="{{data.Ruang}}">
+                                <input type="text" class="form-control" placeholder="Ruang kelas" name="edit-ruang-matakuliah" id="edit-ruang-dosen" value="{{data.Ruang}}">
                                 <div class="form-control-icon">
                                     <i class="bi bi-person"></i>
                                 </div>
@@ -79,15 +78,14 @@ Manajemen Kelas
                     </div>
                 </div>
             </div>
-        </form>
     </div>
 </div>
 
 <script>
     $(document).ready(function () {
         $("#submitsave").click(function () {
-            let ewaktu = $("#edit-waktu").val();
-            let eruang = $("#edit-ruang").val();
+            let ewaktu = $("#edit-waktu-dosen").val();
+            let eruang = $("#edit-ruang-dosen").val();
             if (ewaktu == "" || eruang == "") {
                 swal.fire({
                     title: "Incomplete data",
@@ -107,10 +105,10 @@ Manajemen Kelas
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "POST",
-                            url: "/editkelas/" + id,
+                            url: "/editkelas/{{ data._id }}",
                             data: {
-                                namematkul: namematkul,
-                                jurusan: jurusan,
+                                ewaktu: ewaktu,
+                                eruang: eruang,
                             },
                             success: function (response) {
                                 if (response.result == 'success') {

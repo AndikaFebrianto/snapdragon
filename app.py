@@ -353,18 +353,17 @@ def savekelas():
 @app.route('/editkelas/<string:id>', methods=['GET', 'POST'])
 def editkelas(id):
     if request.method == 'POST':
-        time_receive = request.form['e-waktu']
-        room_receive = request.form['name-ruang']
+        time_receive = request.form['edit-waktu-matakuliah']
+        room_receive = request.form['edit-ruang-matakuliah']
 
         db.kelas.update_one({'_id': ObjectId(id)}, {'$set': {'Waktu': time_receive, 'Ruang': room_receive}})
-        return redirect(url_for('mnjm_kelas'))
+        return jsonify({'result' : 'success'})
     
     token_receive = request.cookies.get("mytoken")
     try:
         data = db.kelas.find_one({'_id': ObjectId(id)})
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({'username':payload.get('id')})
-        # kelas = db.kelas.find()
         return render_template('dosen/editkelas.html', data=data, user_info=user_info ,active_page="mnjm_kls")
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
@@ -390,7 +389,7 @@ def tambahklsmhs(id):
             user_info = db.users.find_one({'username':payload.get('id')})
             pertemuan = {f'pertemuan{i}': 'Tidak Hadir' for i in range(1, 17)}
             db.kelas_mhs.insert_one({'idKelas': idKelas, 'username' : user_info['username'], 'nim': nim_receive, **pertemuan})
-            return jsonify({'success': True, 'message': 'Data berhasil dimasukkan'})
+            return jsonify({'success': True})
 
     
     token_receive = request.cookies.get("mytoken")
@@ -608,14 +607,12 @@ def changepassword():
             return jsonify(
                 {
                     "result": "success",
-                    "msg": "Password Telah Diupdate",
                 }
             )  
         else:
             return jsonify(
                 {
                     "result": "fail",
-                    "msg": "Password anda tidak cocok",
                 }
             )
         pass
