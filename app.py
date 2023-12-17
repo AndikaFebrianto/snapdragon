@@ -353,8 +353,8 @@ def savekelas():
 @app.route('/editkelas/<string:id>', methods=['GET', 'POST'])
 def editkelas(id):
     if request.method == 'POST':
-        time_receive = request.form['edit-waktu-matakuliah']
-        room_receive = request.form['edit-ruang-matakuliah']
+        time_receive = request.form['e-waktu']
+        room_receive = request.form['name-ruang']
 
         db.kelas.update_one({'_id': ObjectId(id)}, {'$set': {'Waktu': time_receive, 'Ruang': room_receive}})
         return redirect(url_for('mnjm_kelas'))

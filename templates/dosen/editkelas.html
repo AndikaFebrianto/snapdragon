@@ -73,7 +73,9 @@ Manajemen Kelas
                         </div>
                     </div>
                     <div class="col-12 d-flex justify-content-end">
-                        <button id="submitsave" class="btn btn-success me-1 mb-1">Submit</button>
+                        <button onclick="editkelasdosen('{{data["_id"]}}')"
+                            class="btn icon btn-danger"><i class="fa-solid fa-trash"
+                                title="Hapus"></i></button>
                     </div>
                 </div>
             </div>
@@ -105,7 +107,7 @@ Manajemen Kelas
                     if (result.isConfirmed) {
                         $.ajax({
                             type: "POST",
-                            url: "/editkelas/{{ data._id }}",
+                            url: "/editkelas/" + id,
                             data: {
                                 namematkul: namematkul,
                                 jurusan: jurusan,
@@ -121,6 +123,35 @@ Manajemen Kelas
             }
         });
     });
+
+    function editkelasdosen(id) {
+        ewaktu = $('#getnim').val();
+        idKelas = $('#idkelas').val();
+
+        $.ajax({
+            type: "POST",
+            url: "/tambah-kelas-mahasiswa/{{data._id}}",
+            data: {
+                ewaktu: ewaktu,
+                idKelas: idKelas,
+            },
+            success: function (response) {
+                if (response.success === true) {
+                    Swal.fire({
+                        position: "top",
+                        icon: "success",
+                        title: "Data berhasil dimasukan!",
+                        showConfirmButton: false,
+                        timer: 1500
+                      });
+                    window.location.replace("/tambah-kelas-mahasiswa/{{data._id}}");
+                }
+                if (response.error === true) {
+                    alert(response.message);
+                }
+            }
+        });
+    }
 </script>
 
 {% endblock %}
