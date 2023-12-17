@@ -29,6 +29,7 @@ Manajemen Kelas
                                 <tr>
                                     <th>KDM</th>
                                     <th>Mata Kuliah</th>
+                                    <th>Hari</th>
                                     <th>Waktu</th>
                                     <th>Ruang</th>
                                     <th>Nama Dosen</th>
@@ -41,6 +42,7 @@ Manajemen Kelas
                                     <td>{{kelas['Kode_Matkul']}}</td>
                                     <td><a href="/tambah-kelas-mahasiswa/{{kelas._id}}">{{kelas['Nama_Matkul']}}</a>
                                     </td>
+                                    <td>{{kelas['Hari']}}</td>
                                     <td>{{kelas['Waktu']}}</td>
                                     <td>{{kelas['Ruang']}}</td>
                                     <td>{{user_info['full_name']}}</td>
@@ -104,6 +106,20 @@ Manajemen Kelas
                         </div>
                         <div class="col-12 mb-2">
                             <div class="form-group">
+                                <label for="fruang">Hari</label>
+                                <select class="form-select" id="day">
+                                    <option selected>Pilih Hari</option>
+                                    <option value="senin">Senin</option>
+                                    <option value="selasa">Selasa</option>
+                                    <option value="rabu">Rabu</option>
+                                    <option value="kamis">Kamis</option>
+                                    <option value="jumat">Jumat</option>
+                                </select>
+                            </div>
+                            <p id="help-hari-input" class="mt-2"></p>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <div class="form-group">
                                 <label for="fruang">Dosen</label>
                                 <input type="text" id="fnmedosen1" class="form-control" name="fnmedosen1"
                                     placeholder="Dosen" value="{{user_info.full_name}}" required disabled>
@@ -159,12 +175,13 @@ Manajemen Kelas
         $('#select-matkul1').val('');
         $('#ftime').val('');
         $('#fruang').val('');
-
+        
         $('#savekelas').click(function () {
             let matkul = $("#select-matkull").val();
             let ftime = $("#ftime").val();
             let fruang = $("#fruang").val();
             let dosen = $("#iddosen1").val();
+            let day = $('#day').val();
 
             if (matkul === '') {
                 $("#help-matkul1-input")
@@ -181,6 +198,12 @@ Manajemen Kelas
             if (fruang === '') {
                 $("#help-fname-input")
                     .text("Please enter your place")
+                    .addClass("text-danger");
+                return;
+            }
+            if (day === '') {
+                $("#help-hari-input")
+                    .text("Please enter your day")
                     .addClass("text-danger");
                 return;
             }
@@ -203,6 +226,7 @@ Manajemen Kelas
                             ftime: ftime,
                             fruang: fruang,
                             dosen: dosen,
+                            day: day,
                         },
                         success: function (response) {
                             if (response.result == 'success'){

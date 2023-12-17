@@ -120,8 +120,8 @@ def savedosen():
         "full_name": fname_receive,
         "tanggal_lahir": tl_receive,
         "gender": gender_receive,
-        "profile_pic": "",                                         
-        "profile_pic_real": "profile/2.jpg",
+        "profile_pic": "2.jpg",                                         
+        "profile_pic_real": "myassets/profile/2.jpg",
     }
     db.users.insert_one(doc)
     return jsonify({'result': 'success'})
@@ -151,16 +151,6 @@ def editdosen(id):
 def delete(id):
     db.users.delete_one({'_id': ObjectId(id)})
     return jsonify({"result": "success"})
-
-def get_user_role():
-    token_receive = request.cookies.get("mytoken")
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
-        user_info = db.users.find_one({"username": payload["id"]})
-        role = user_info.get('role')
-        return role
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        return redirect(url_for("home"))
 
 @app.route('/manajemen-mahasiswa')
 def mnjm_mhs():
@@ -325,6 +315,7 @@ def mnjm_kelas():
                     "nip": 1,
                     "Waktu": 1,
                     "Ruang": 1,
+                    "Hari": 1,
                     "Nama_Matkul": "$info_matakuliah.Nama_Matkul",
                     "Jurusan": "$info_matakuliah.Jurusan"
                 }
@@ -340,12 +331,14 @@ def savekelas():
     ftime_receive = request.form['ftime']
     fruang_receive = request.form['fruang']
     dosen_receive = request.form['dosen']
+    day_receive = request.form['day']
 
     doc = {
         "Kode_Matkul": matkul_receive,
         "nip": dosen_receive,
         "Waktu": ftime_receive,
         "Ruang": fruang_receive,
+        "Hari": day_receive,
     }
     db.kelas.insert_one(doc)
     return jsonify({'result': 'success'})
@@ -624,6 +617,9 @@ def changepassword():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
+@app.route('/mahasiswa-absensi')
+def mhsabsensi():
+    pass
 
 def get_user_role():
     token_receive = request.cookies.get("mytoken")
