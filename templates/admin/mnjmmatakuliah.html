@@ -42,8 +42,9 @@ Manajemen Mata Kuliah
                                     <td>
                                         <a href="editmatkul/{{matkul._id}}" class="btn icon btn-info"><i
                                                 class="fa-solid fa-pen-to-square text-white" title="edit"></i></a>
-                                        <a href="/deletematkul/{{matkul._id}}" class="btn icon btn-danger"><i
-                                                class="fa-solid fa-trash" title="Hapus"></i></a>
+                                        <button onclick="deletematkuladmin('{{matkul["_id"]}}')"
+                                            class="btn icon btn-danger"><i class="fa-solid fa-trash"
+                                                title="Hapus"></i></button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -101,7 +102,7 @@ Manajemen Mata Kuliah
                                     <option value="Sistem Informasi">Sistem Informasi</option>
                                     <option value="Teknik Komputer">Teknik Komputer</option>
                                     <option value="Teknik Informatika">Teknik Informatika</option>
-                                  </select>
+                                </select>
                             </div>
                         </div>
                         <div class="col-12 d-flex justify-content-end mt-4">
@@ -119,6 +120,35 @@ Manajemen Mata Kuliah
 </div>
 
 <script>
+    function deletematkuladmin(id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "/deletematkul/" + id,
+                    success: function (response) {
+                        if (response.result == "success") {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your file has been deleted.",
+                                icon: "success"
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }
     function getRandomLetter() {
         var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         return letters.charAt(Math.floor(Math.random() * letters.length));
@@ -128,11 +158,11 @@ Manajemen Mata Kuliah
         return Math.floor(Math.random() * max).toString().padStart(2, '0');
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#input-kdm').val('');
         $('#namamatkul').val('');
 
-        $('#generate-kdm').click(function() {
+        $('#generate-kdm').click(function () {
             let jurusan = $('#jurusan').val();
             if (jurusan === '') {
                 $("#help-kdm-input")
@@ -149,75 +179,87 @@ Manajemen Mata Kuliah
             $('#input-kdm').val(code);
         });
     });
-    
+
     $('#check_kdm').click(function () {
-            let kdm = $("#input-kdm").val();
-            if (kdm === "") {
-                $("#help-kdm-input")
-                    .text("Enter in your kdm")
-                    .removeClass("text-success")
-                    .addClass("text-danger");
-                return;
+        let kdm = $("#input-kdm").val();
+        if (kdm === "") {
+            $("#help-kdm-input")
+                .text("Enter in your kdm")
+                .removeClass("text-success")
+                .addClass("text-danger");
+            return;
+        }
+        $("#help-kdm-input").text('');
+        $("#help-kdm-input").removeClass('text-danger');
+        $.ajax({
+            type: "POST",
+            url: "/manajemen-matkul/checkkdm",
+            data: {
+                kdm: kdm
+            },
+            success: function (response) {
+                if (response["exists"]) {
+                    $("#help-kdm-input")
+                        .text("This kdm is already in use.")
+                        .addClass("text-danger");
+                } else {
+                    $("#help-kdm-input")
+                        .text("This kdm is available!")
+                        .removeClass("text-danger")
+                        .addClass("text-success");
+                }
             }
-            $("#help-kdm-input").text('');
-            $("#help-kdm-input").removeClass('text-danger');
-            $.ajax({
-                type: "POST",
-                url: "/manajemen-matkul/checkkdm",
-                data: {
-                    kdm: kdm
-                },
-                success: function (response) {
-                    if (response["exists"]) {
-                        $("#help-kdm-input")
-                            .text("This kdm is already in use.")
-                            .addClass("text-danger");
-                    } else {
-                        $("#help-kdm-input")
-                            .text("This kdm is available!")
-                            .removeClass("text-danger")
-                            .addClass("text-success");
+        });
+    });
+
+    $('#savematkul').click(function () {
+        let kdm = $("#input-kdm").val();
+        let matkul = $("#namamatkul").val();
+        let pilihjurusan = $("#pilihjurusan").val();
+
+        if ($("#help-kdm-input").hasClass("text-danger")) {
+            Swal.fire("Please check your kdm", "", "error");
+            return;
+        } else if (!$("#help-kdm-input").hasClass("text-success")) {
+            Swal.fire("Please double check your kdm", "", "error");
+            return;
+        }
+        if (matkul === '') {
+            $("#help-matkul-input")
+                .text("Please enter your name")
+                .addClass("text-danger");
+            return;
+        }
+        $("#help-matkul-input").text('');
+        $("#help-matkul-input").removeClass('text-danger');
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "this data will be added!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, add it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "/manajemen-mahasiswa/savematkul",
+                    data: {
+                        kdm: kdm,
+                        matkul: matkul,
+                        pilihjurusan: pilihjurusan,
+                    },
+                    success: function (response) {
+                        Swal.fire("course data has been successfully added", "", "success").then((result) => { window.location.replace("/manajemen-matakuliah"); });
                     }
-                }
-            });
-        });
-
-        $('#savematkul').click(function () {
-            let kdm = $("#input-kdm").val();
-            let matkul = $("#namamatkul").val();
-            let pilihjurusan = $("#pilihjurusan").val();
-
-            if ($("#help-kdm-input").hasClass("text-danger")) {
-                alert("Please check your kdm");
-                return;
-            } else if (!$("#help-kdm-input").hasClass("text-success")) {
-                alert("Please double check your kdm");
-                return;
+                });
             }
-            if (matkul === '') {
-                $("#help-matkul-input")
-                    .text("Please enter your name")
-                    .addClass("text-danger");
-                return;
-            }
-            $("#help-matkul-input").text('');
-            $("#help-matkul-input").removeClass('text-danger');
-            $.ajax({
-                type: "POST",
-                url: "/manajemen-mahasiswa/savematkul",
-                data: {
-                    kdm: kdm,
-                    matkul: matkul,
-                    pilihjurusan: pilihjurusan,
-                },
-                success: function (response) {
-                    alert("Nice!");
-                    window.location.replace("/manajemen-matakuliah");
-                }
-            });
-        });
+        })
+    });
 
-        
-    </script>
+
+</script>
 
 {% endblock %}

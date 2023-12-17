@@ -126,12 +126,12 @@ def savedosen():
 @app.route('/editdosen/<string:id>', methods=['GET', 'POST'])
 def editdosen(id):
     if request.method == 'POST':
-        fname_receive = request.form['edit-nama-dosen']
-        tl_receive = request.form['edit-brithday-dosen']
-        gender_receive = request.form['edit-gender-dosen']
+        fname_receive = request.form['name']
+        tl_receive = request.form['date']
+        gender_receive = request.form['gender']
 
         db.users.update_one({'_id': ObjectId(id)}, {'$set': {'full_name': fname_receive, 'tanggal_lahir': tl_receive, 'gender': gender_receive}})
-        return redirect(url_for('mnjmdosen'))
+        return jsonify({'result' : 'success'})
     
     token_receive = request.cookies.get("mytoken")
     try:
@@ -166,7 +166,9 @@ def mnjm_mhs():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
-        semua_mhs = db.users.find({'role': 'mahasiswa'})
+        semua_mhs = list(db.users.find({'role': 'mahasiswa'}))
+        for user in semua_mhs:
+            user['_id'] = str(user['_id'])
         return render_template("admin/mnjmmahasiswa.html", active_page="mnjm_mhs", user_info=user_info, semua_mhs=semua_mhs)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))    
@@ -206,13 +208,14 @@ def savemhs():
 @app.route('/editmhs/<string:id>', methods=['GET', 'POST'])
 def editmhs(id):
     if request.method == 'POST':
-        fname_receive = request.form['edit-nama-mhs']
-        tl_receive = request.form['edit-brithday-mhs']
-        gender_receive = request.form['edit-gender-mhs']
-        fnameortu_receive = request.form['edit-nama-mhsortu']
+        fname_receive = request.form['name']
+        tl_receive = request.form['date']
+        gender_receive = request.form['gender']
+        fnameortu_receive = request.form['nameortu']
 
         db.users.update_one({'_id': ObjectId(id)}, {'$set': {'full_name': fname_receive, 'tanggal_lahir': tl_receive, 'gender': gender_receive, 'fname_ortu' : fnameortu_receive}})
-        return redirect(url_for('mnjm_mhs'))
+        return jsonify({'result': 'success'})
+
     
     token_receive = request.cookies.get("mytoken")
     try:
@@ -225,10 +228,10 @@ def editmhs(id):
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-@app.route('/deletemhs/<string:id>')
+@app.route('/deletemhs/<string:id>', methods=["POST"])
 def deletemhs(id):
     db.users.delete_one({'_id': ObjectId(id)})
-    return redirect(url_for('mnjm_mhs'))
+    return jsonify({"result": "success"})
 
 @app.route('/manajemen-matakuliah')
 def mnjmmatakuliah():
@@ -236,7 +239,9 @@ def mnjmmatakuliah():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
-        semua_matkul = db.matakuliah.find()
+        semua_matkul = list(db.matakuliah.find())
+        for matkul in semua_matkul:
+            matkul['_id'] = str(matkul['_id'])
         return render_template("admin/mnjmmatakuliah.html", active_page="mnjm_matkul", user_info=user_info, semua_matkul=semua_matkul)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
@@ -265,12 +270,12 @@ def savematkul():
 def editmatkul(id):
     
     if request.method == 'POST':
-        matkul_receive = request.form['edit-nama-matkul']
-        pilihjurusan_receive = request.form['editpilihjurusan']
-
+        matkul_receive = request.form['namematkul']
+        pilihjurusan_receive = request.form['jurusan']
 
         db.matakuliah.update_one({'_id': ObjectId(id)}, {'$set': {'Nama_Matkul': matkul_receive, 'Jurusan': pilihjurusan_receive}})
-        return redirect(url_for('mnjmmatakuliah'))
+        return jsonify({'result': 'success'})
+
     
     token_receive = request.cookies.get("mytoken")
     try:
@@ -283,10 +288,10 @@ def editmatkul(id):
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-@app.route('/deletematkul/<string:id>')
+@app.route('/deletematkul/<string:id>', methods=['POST'])
 def deletematkul(id):
     db.matakuliah.delete_one({'_id': ObjectId(id)})
-    return redirect(url_for('mnjmmatakuliah'))
+    return jsonify({'result': 'success'})
 
 @app.route('/manajemen-kelas')
 def mnjm_kelas():
@@ -295,7 +300,6 @@ def mnjm_kelas():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
         nip_user = user_info['username']
-        print(nip_user)
         matakuliah_list = db.matakuliah.find()
         kelas_list = list(db.kelas.aggregate([
             {
@@ -364,10 +368,11 @@ def editkelas(id):
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 
-@app.route('/deletekelas/<string:id>')
+@app.route('/deletekelas/<string:id>', methods=['POST'])
 def deletekelas(id):
     db.kelas.delete_one({'_id': ObjectId(id)})
-    return redirect(url_for('mnjm_kelas'))
+    return jsonify({"result": "success"})
+
 
 @app.route('/tambah-kelas-mahasiswa/<string:id>', methods=['GET', 'POST'])
 def tambahklsmhs(id):
@@ -376,10 +381,8 @@ def tambahklsmhs(id):
         nim_receive = request.form['getnim']
         idKelas_recive = request.form['idKelas']
         idKelas = ObjectId(idKelas_recive)
-        print(nim_receive)
         data = db.kelas_mhs.find_one({"nim": nim_receive})
         if data:
-            print("Data sudah ada")
             return jsonify({'error': True, 'message': 'Data sudah ada'})
         else:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])

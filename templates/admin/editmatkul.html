@@ -15,7 +15,6 @@ Manajemen Mahasiswa
 
     </div>
     <div class="card-body">
-        <form class="form form-horizontal" action="/editmatkul/{{ data._id }}" method="POST">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-4">
@@ -38,7 +37,7 @@ Manajemen Mahasiswa
                     <div class="col-md-8">
                         <div class="form-group has-icon-left">
                             <div class="position-relative">
-                                <input type="text" class="form-control" placeholder="Nama Mata Kuliah" name="edit-nama-matkul" id="edit-namamatkul" value="{{data.Nama_Matkul}}" required>
+                                <input type="text" class="form-control" placeholder="Nama Mata Kuliah" name="edit-nama-matkul" id="edit-nama-matkul" value="{{data.Nama_Matkul}}" required>
                                 <div class="form-control-icon">
                                     <i class="bi bi-person"></i>
                                 </div>
@@ -48,7 +47,7 @@ Manajemen Mahasiswa
                     <div class="col-md-4">
                         <label for="jurusan">Jurusan</label>
                     </div>
-                    <div class="col-12 mb-2">
+                    <div class="col-8 mb-2">
                         <div class="form-group">
                             <select class="form-select" name="editpilihjurusan" id="editpilihjurusan" required>
                                 <option selected>Pilih Jurusan</option>
@@ -59,11 +58,10 @@ Manajemen Mahasiswa
                         </div>
                     </div>  
                     <div class="col-12 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-success me-1 mb-1" id="editmatkul">Submit</button>
+                        <button id="editmatkul" class="btn btn-success me-1 mb-1">Submit</button>
                     </div>
                 </div>
             </div>
-        </form>
     </div>
 </div>
 
@@ -71,6 +69,43 @@ Manajemen Mahasiswa
 <script>
     $(document).ready(function () {
         let pilihjurusan = $("#editpilihjurusan").val('{{selected_major}}');
+        $("#editmatkul").click(function () {
+            let namematkul = $("#edit-nama-matkul").val();
+            let jurusan = $("#editpilihjurusan").val();
+            if (namematkul == "" || jurusan == "") {
+                swal.fire({
+                    title: "Incomplete data",
+                    text: "Please fill in the data correctly.",
+                    icon: "warning",
+                });
+            } else {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "Your data will be updated!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, update it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/editmatkul/{{ data._id }}",
+                            data: {
+                                namematkul: namematkul,
+                                jurusan: jurusan,
+                            },
+                            success: function (response) {
+                                if (response.result == 'success') {
+                                    Swal.fire("Update!", "Your file has been updated!", "success").then((result) => { window.location.replace("/manajemen-matakuliah"); });
+                                }
+                            },
+                        });
+                    }
+                })
+            }
+        });
     });
 </script>
 {% endblock %}

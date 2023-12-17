@@ -43,7 +43,7 @@ Manajemen Dosen
                                     <td>
                                         <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i
                                                 class="fa-solid fa-pen-to-square text-white " title="edit"></i></a>
-                                        <button onclick="deletedosen('{{user["_id"]}}')" class="btn icon btn-danger"><i
+                                        <button onclick="deletedosen('{{user[" _id"]}}')" class="btn icon btn-danger"><i
                                                 class="fa-solid fa-trash" title="Hapus"></i></button>
                                     </td>
                                 </tr>
@@ -235,19 +235,31 @@ Manajemen Dosen
             $("#help-tl-input").text('');
             $("#help-tl-input").removeClass('text-danger');
 
-            $.ajax({
-                type: "POST",
-                url: "/manajemen-dosen/savedosen",
-                data: {
-                    nip: nip,
-                    fname: fname,
-                    tl: tl,
-                    gender: gender,
-                },
-                success: function (response) {
-                    Swal.fire("Lecturer data has been successfully added", "", "success").then((result) => {  window.location.replace("/manajemen-dosen"); });
+            Swal.fire({
+                title: "Are you sure?",
+                text: "this data will be added!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, add it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/manajemen-dosen/savedosen",
+                        data: {
+                            nip: nip,
+                            fname: fname,
+                            tl: tl,
+                            gender: gender,
+                        },
+                        success: function (response) {
+                            Swal.fire("Lecturer data has been successfully added", "", "success").then((result) => { window.location.replace("/manajemen-dosen"); });
+                        }
+                    });
                 }
-            });
+            })
         });
 
     });

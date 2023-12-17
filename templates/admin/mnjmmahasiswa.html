@@ -49,8 +49,9 @@ Manajemen Mahasiswa
                                     <td>
                                         <a href="editmhs/{{ user._id }}" class="btn icon btn-info"><i
                                                 class="fa-solid fa-pen-to-square text-white" title="edit"></i></a>
-                                        <a href="/deletemhs/{{user._id}}" class="btn icon btn-danger"><i
-                                                class="fa-solid fa-trash" title="Hapus"></i></a>
+                                        <button onclick="deletemhsadmin('{{user["_id"]}}')"
+                                            class="btn icon btn-danger"><i class="fa-solid fa-trash"
+                                                title="Hapus"></i></button>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -157,6 +158,35 @@ Manajemen Mahasiswa
 </div>
 
 <script>
+    function deletemhsadmin(id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: "POST",
+                    url: "/deletemhs/" + id,
+                    success: function (response) {
+                        if (response.result == "success") {
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Your file has been deleted.",
+                                icon: "success"
+                            }).then((result) => {
+                                window.location.reload();
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    };
     $(document).ready(function () {
         $('#input-nim').val('');
         $('#input-idortu').val('');
@@ -221,10 +251,10 @@ Manajemen Mahasiswa
 
 
             if ($("#help-nim-input").hasClass("text-danger")) {
-                alert("Please check your nim");
+                Swal.fire("Please check your nim", "", "error");
                 return;
             } else if (!$("#help-nim-input").hasClass("text-success")) {
-                alert("Please double check your nim");
+                Swal.fire("Please double check your nim", "", "error");
                 return;
             }
 
@@ -245,24 +275,34 @@ Manajemen Mahasiswa
             $("#help-tlmhs-input").text('');
             $("#help-tlmhs-input").removeClass('text-danger');
 
-            $.ajax({
-                type: "POST",
-                url: "/manajemen-mahasiswa/savemhs",
-                data: {
-                    nim: nim,
-                    fnamemhs: fnamemhs,
-                    tlmhs: tlmhs,
-                    gendermhs: gendermhs,
-                    idOrtu: idOrtu,
-                    fnamemhsortu: fnamemhsortu,
-                },
-                success: function (response) {
-                    alert("Nice!");
-                    window.location.replace("/manajemen-mahasiswa");
+            Swal.fire({
+                title: "Are you sure?",
+                text: "this data will be added!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, add it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/manajemen-mahasiswa/savemhs",
+                        data: {
+                            nim: nim,
+                            fnamemhs: fnamemhs,
+                            tlmhs: tlmhs,
+                            gendermhs: gendermhs,
+                            idOrtu: idOrtu,
+                            fnamemhsortu: fnamemhsortu,
+                        },
+                        success: function (response) {
+                            Swal.fire("student data has been successfully added", "", "success").then((result) => { window.location.replace("/manajemen-mahasiswa"); });
+                        }
+                    });
                 }
-            });
+            })
         });
-
     });
 </script>
 
