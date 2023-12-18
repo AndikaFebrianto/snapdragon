@@ -82,7 +82,7 @@ Manajemen Kelas
                                     aria-label="Default select example">
                                     <option value="">Pilih Mata Kuliah</option>
                                     {% for mk in matakuliah_list %}
-                                    <option value="{{ mk.Kode_Matkul }}">{{ mk.Nama_Matkul }}</option>
+                                    <option value="{{ mk.Kode_Matkul }}" data-nama="{{ mk.Nama_Matkul }}">{{ mk.Nama_Matkul }}</option>
                                     {% endfor %}
                                 </select>
                                 <p id="help-matkul1-input" class="mt-2"></p>
@@ -182,6 +182,8 @@ Manajemen Kelas
             let fruang = $("#fruang").val();
             let dosen = $("#iddosen1").val();
             let day = $('#day').val();
+            var selectedNama = $('option:selected', "#select-matkull").data('nama');
+
 
             if (matkul === '') {
                 $("#help-matkul1-input")
@@ -227,6 +229,7 @@ Manajemen Kelas
                             fruang: fruang,
                             dosen: dosen,
                             day: day,
+                            selectedNama, selectedNama,
                         },
                         success: function (response) {
                             if (response.result == 'success'){

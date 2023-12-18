@@ -34,3 +34,28 @@ input[type="number"] {
     font-size: 24px;
     color: #ffff;
 }
+
+.dataTables_wrapper {
+    background-color: #d9dff2;
+    padding: 20px;
+    color: #000;
+    border-radius: 10px;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    margin-bottom: 20px;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 20px;
+}
+.dataTables_wrapper .dataTables_info {
+    margin-top: 20px;
+}
+
+@media (max-width: 1280px) {
+    #DataTables_Table_0_wrapper {
+        width: fit-content;
+    }
+}

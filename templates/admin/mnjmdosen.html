@@ -23,7 +23,7 @@ Manajemen Dosen
                         </p>
                     </div>
                     <div class="table-responsive mx-4 mb-4">
-                        <table class="table table-bordered table-striped table-dark mb-0">
+                        <table id="tabeldosen" class="table table-bordered table-striped table-dark mb-0">
                             <thead>
                                 <tr>
                                     <th>NIP</th>
@@ -130,6 +130,7 @@ Manajemen Dosen
     </div>
 </div>
 
+
 <script>
     function deletedosen(id) {
         Swal.fire({
@@ -165,6 +166,7 @@ Manajemen Dosen
         $('#input-nip').val('');
         $('#fname').val('');
         $('#tl').val('');
+        // $('#tabeldosen').DataTable();
 
         $('#generate-nip').click(function () {
             var currentYear = new Date().getFullYear();

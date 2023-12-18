@@ -1,4 +1,4 @@
-{% extends 'navmhs.html' %}
+{% extends 'nav.html' %}
 
 {% block tittle %}
   Daftar Mata Kuliah
@@ -12,12 +12,6 @@
     <div class="row" id="table-bordered">
       <div class="col-12">
         <div class="card">
-          <div class="card-header">
-            <form>
-              <input class="form-control" list="datalistOptions" id="exampleDataList" placeholder="search..." />
-              <datalist id="datalistOptions"></datalist>
-            </form>
-          </div>
 
           <div class="card-content">
             <div class="card-body">
@@ -37,14 +31,14 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for user in dosen %}
-                    <tr>
-                      <td>{{ user['matkul'] }}</td>
-                      <td>{{ user['name_matkul'] }}</td>
-                      <td>{{ user['time'] }}</td>
-                      <td>{{ user['room'] }}</td>
-                      <td>{{ user['username'] }}</td>
-                    </tr>
+                  {% for d in data %}
+                  <tr>
+                      <td>{{ d.kode_matkul[0] }}</td>
+                      <td><a href="/view-kelas-mahasiswa/{{d._id}}">{{ d.nama_matkul[0] }}</a></td>
+                      <td>{{ d.waktu[0] }}</td>
+                      <td>{{ d.ruang[0] }}</td>
+                      <td>{{ d.dosen[0] }}</td>
+                  </tr>
                   {% endfor %}
                 </tbody>
               </table>

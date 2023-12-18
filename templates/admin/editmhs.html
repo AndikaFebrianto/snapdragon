@@ -9,7 +9,6 @@
         <a href="/manajemen-mahasiswa" class="btn btn-primary text-white">Kembali</a>
     </div>
     <div class="card-body">
-        <!-- <form class="form form-horizontal" action="/editmhs/{{ data._id }}" method="POST"> -->
         <div class="form-body">
             <div class="row">
                 <div class="col-md-4">
@@ -21,7 +20,7 @@
                             <input type="text" class="form-control" placeholder="edit nip" id="edit-nip"
                                 value="{{data.username}}" disabled />
                             <div class="form-control-icon">
-                                <i class="fa-solid fa-user-secret"></i>
+                                <i class="fa-solid fa-id-card"></i>
                             </div>
                         </div>
                     </div>
@@ -80,7 +79,7 @@
                             <input type="text" class="form-control" placeholder="edit nip" id="edit-nip"
                                 value="{{data.id_ortu}}" disabled />
                             <div class="form-control-icon">
-                                <i class="fa-solid fa-user-secret"></i>
+                                <i class="fa-solid fa-id-card"></i>
                             </div>
                         </div>
                     </div>
@@ -160,13 +159,4 @@
         });
     });
 </script>
-
-<!-- let name = $('#edit-nama-mhs').val();
-let date = $('#edit-brithday-mhs').val();
-let gender = $('input[name="edit-gender-mhs"]:checked').val();
-let nameortu = $('#edit-nama-mhsort').val();
-console.log(name)
-console.log(date)
-console.log(gender)
-console.log(nameortu) -->
 {% endblock %}

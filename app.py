@@ -1,3 +1,7 @@
+import os
+from os.path import join, dirname
+from dotenv import load_dotenv
+
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 from pymongo import MongoClient
 import jwt
@@ -14,9 +18,16 @@ app.config["UPLOAD_FOLDER"] = "./static/myassets/profile"
 
 SECRET_KEY = "SNAPDARGON"
 
-client = MongoClient('mongodb+srv://Andika02:Andika0202@cluster0.9ohxqnd.mongodb.net/?retryWrites=true&w=majority')
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
 
-db = client['snapdragon']
+MONGODB_URI = os.environ.get("MONGODB_URI")
+DB_NAME =  os.environ.get("DB_NAME")
+
+client = MongoClient(MONGODB_URI)
+
+db = client[DB_NAME]
+
 
 @app.route('/')
 def home():
@@ -74,11 +85,14 @@ def dashboard():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
         user_kls = db.kelas_mhs.count_documents({"username": user_info['username']})
+        mhs_kls = db.kelas_mhs.count_documents({"nim": user_info['username']})
         role = user_info.get('role', 'user')
+        print(role)
         count_mahasiswa = db.users.count_documents({'role': 'mahasiswa'})
         count_dosen = db.users.count_documents({'role': 'dosen'})
         count_matkul = db.matakuliah.count_documents({})
-        return render_template('dashboard.html', user_info=user_info, active_page='dashboard', role=role, count_mahasiswa=count_mahasiswa, count_dosen=count_dosen, count_matkul=count_matkul, user_kls=user_kls)
+        count_kelas = db.kelas_mhs.count_documents({})
+        return render_template('dashboard.html', user_info=user_info, active_page='dashboard', role=role, count_mahasiswa=count_mahasiswa, count_dosen=count_dosen, count_matkul=count_matkul, user_kls=user_kls, mhs_kls=mhs_kls, count_kelas=count_kelas)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
     
@@ -332,9 +346,11 @@ def savekelas():
     fruang_receive = request.form['fruang']
     dosen_receive = request.form['dosen']
     day_receive = request.form['day']
+    namematkul_receive = request.form['selectedNama']
 
     doc = {
         "Kode_Matkul": matkul_receive,
+        "Nama_Matkul": namematkul_receive,
         "nip": dosen_receive,
         "Waktu": ftime_receive,
         "Ruang": fruang_receive,
@@ -367,6 +383,7 @@ def editkelas(id):
 @app.route('/deletekelas/<string:id>', methods=['POST'])
 def deletekelas(id):
     db.kelas.delete_one({'_id': ObjectId(id)})
+    db.kelas_mhs.delete_one({'idKelas': ObjectId(id)})
     return jsonify({"result": "success"})
 
 
@@ -635,7 +652,99 @@ def changepassword():
 
 @app.route('/mahasiswa-absensi')
 def mhsabsensi():
-    pass
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]})
+        nim_user = user_info['username']
+        nim_user1 = '1023744246'  # ganti dengan nim yang diinginkan
+        pipeline = [
+                    {"$match": {"nim": nim_user}},
+                    {"$lookup": {
+                        "from": "kelas",
+                        "localField": "idKelas",
+                        "foreignField": "_id",
+                        "as": "kelas"
+                    }},
+                    {"$lookup": {
+                        "from": "users",
+                        "localField": "username",
+                        "foreignField": "username",
+                        "as": "user"
+                    }},
+                    {"$project": {
+                        "_id": 1,
+                        "nim" : 1,
+                        "kode_matkul": "$kelas.Kode_Matkul",
+                        "nama_matkul": "$kelas.Nama_Matkul",
+                        "waktu": "$kelas.Waktu",
+                        "ruang": "$kelas.Ruang",
+                        "dosen": "$user.full_name"
+                    }}
+        ]
+        data = list(db.kelas_mhs.aggregate(pipeline))
+
+        return render_template("mahasiswa/daftarmatkul.html", active_page='matkul_mhs', user_info=user_info, data=data)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/view-kelas-mahasiswa/<string:id>')
+def viewabsenmhs(id):
+    token_receive = request.cookies.get("mytoken")
+    try:
+        data = db.kelas.find_one({'_id': ObjectId(id)})
+        idc = ObjectId(id)
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        kls_mhs = list(db.kelas_mhs.aggregate([
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "nim",
+                    "foreignField": "username",
+                    "as": "info_mhs"
+                }
+            },
+            {
+                "$unwind": "$info_mhs"
+            },
+            {
+                "$match": {
+                    "_id": idc
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "fullname": "$info_mhs.full_name", 
+                    "nim": "$info_mhs.username",
+                    "id_ortu": "$info_mhs.id_ortu",
+                    "fname_ortu": "$info_mhs.fname_ortu",
+                    "pertemuan": { "$concatArrays": [ 
+                        [{"status": "$pertemuan1"}], 
+                        [{"status": "$pertemuan2"}], 
+                        [{"status": "$pertemuan3"}], 
+                        [{"status": "$pertemuan4"}], 
+                        [{"status": "$pertemuan5"}], 
+                        [{"status": "$pertemuan6"}], 
+                        [{"status": "$pertemuan7"}], 
+                        [{"status": "$pertemuan8"}], 
+                        [{"status": "$pertemuan9"}], 
+                        [{"status": "$pertemuan10"}], 
+                        [{"status": "$pertemuan11"}], 
+                        [{"status": "$pertemuan12"}], 
+                        [{"status": "$pertemuan13"}], 
+                        [{"status": "$pertemuan14"}], 
+                        [{"status": "$pertemuan15"}], 
+                        [{"status": "$pertemuan16"}] 
+                    ]} 
+                }
+            }
+        ]))
+        return render_template('mahasiswa/absensimhs.html', active_page="mnjm_absen", user_info=user_info, data=data, kls_mhs=kls_mhs, id=id)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
 
 def get_user_role():
     token_receive = request.cookies.get("mytoken")
