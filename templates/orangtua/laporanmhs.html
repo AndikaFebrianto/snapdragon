@@ -1,0 +1,204 @@
+{% extends 'nav.html' %}
+
+{% block tittle %}
+Laporan Dosen
+{% endblock %}
+
+
+{% block content %}
+<link rel="stylesheet" href="/static/assets/compiled/css/application-email.css">
+
+<div class="page-heading email-application overflow-hidden">
+    <div class="page-title">
+        <div class="row">
+            <div class="col-12 col-md-6 order-md-1 order-last">
+                <h3>Laporan Dosen</h3>
+                <p class="text-subtitle text-muted">Anda bisa menanyakan perkembangan mahasiswa ke dosen.</p>
+            </div>
+            <div class="col-12 col-md-6 order-md-2 order-first">
+                <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Email</li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+    </div>
+    <section class="section content-area-wrapper">
+        <div class="sidebar-left">
+            <div class="sidebar">
+                <div class="sidebar-content email-app-sidebar d-flex">
+                    <!-- sidebar close icon -->
+                    <span class="sidebar-close-icon">
+                        <i class="bi bi-x"></i>
+                    </span>
+                    <!-- sidebar close icon -->
+                    <div class="email-app-menu">
+                        <div class="form-group form-group-compose">
+                            <button type="button" class="btn btn-primary btn-block mt-5 mb-4 compose-btn"
+                                data-bs-toggle="modal" data-bs-target="#emailapp">
+                                <i class="bi bi-plus"></i>
+                                Compose
+                            </button>
+                        </div>
+                        <div class="sidebar-menu-list ps">
+                            <!-- sidebar menu  -->
+                            <div class="list-group list-group-messages">
+                                <a href="/laporan-mahasiswa-recive-ortu" class="list-group-item pt-0 {{ 'active' if active_page1 == 'lpinbox' else '' }}" id="inbox-menu">
+                                    <div class="fonticon-wrap d-inline me-3">
+                                        <i class="bi bi-inbox"></i>
+                                    </div>
+                                    Inbox
+                                    <!-- <span
+                                        class="badge bg-light-primary badge-pill badge-round float-right mt-50">5</span> -->
+                                </a>
+                                <a href="/laporan-mahasiswa-ortu" class="list-group-item {{ 'active' if active_page1 == 'lpsent' else '' }}">
+                                    <div class="fonticon-wrap d-inline me-3">
+
+                                        <i class="bi bi-send"></i>
+                                    </div>
+                                    Sent
+                                </a>
+                            </div>
+                            <!-- sidebar menu  end-->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal fade" id="emailapp" tabindex="-1" aria-labelledby="emailappLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="emailappLabel">Message</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row mb-3">
+                            <label for="tujuanpesan" class="col-sm-2 col-form-label">To</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="tujuanpesan" placeholder="NIP Dosen">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="kirimpesan" class="col-sm-2 col-form-label">message</label>
+                            <div class="col-sm-10">
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Leave a comment here" id="kirimpesan"
+                                        style="height: 100px"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="kirimemailapp">Kirim</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-right">
+            <div class="content-overlay"></div>
+            <div class="content-wrapper">
+                <div class="content-header row">
+                </div>
+                <div class="content-body">
+                    <!-- email app overlay -->
+                    <div class="app-content-overlay"></div>
+                    <div class="email-app-area">
+                        <!-- Email list Area -->
+                        <div class="email-app-list-wrapper">
+                            <div class="email-app-list">
+                                <div class="email-action">
+                                    <div class="action-left d-flex align-items-center">
+                                        <div class="sidebar-toggle d-block d-lg-none">
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-list fs-5"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="email-user-list list-group ps ps--active-y">
+                                    <ul class="users-list-wrapper media-list">
+                                        {% for d in messages %}
+                                        <li class="media mail-read">
+                                            <div class="pr-50">
+                                                <div class="avatar">
+                                                    <img src="{{ url_for('static', filename=d.profile_pic_real) }}"
+                                                        alt="avr">
+                                                </div>
+                                            </div>
+                                            <div class="media-body">
+                                                <div class="user-details">
+                                                    <div class="mail-items">
+                                                        <span
+                                                            class="list-group-item-text text-truncate">{{d.receiver}}</span>
+                                                    </div>
+                                                    <div class="mail-meta-item">
+                                                        <span class="float-right">
+                                                            <span class="mail-date">{{d.tanggal}}</span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="mail-message">
+                                                    <p class="list-group-item-text truncate mb-0">
+                                                        {{d.message}}
+                                                    </p>
+                                                    <div class="mail-meta-item">
+                                                        <span class="float-right">
+                                                            <span class="bullet bullet-success bullet-sm"></span>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    $(document).ready(function () {
+        document.querySelector('.sidebar-toggle').addEventListener('click', () => {
+            document.querySelector('.email-app-sidebar').classList.toggle('show')
+        })
+        document.querySelector('.sidebar-close-icon').addEventListener('click', () => {
+            document.querySelector('.email-app-sidebar').classList.remove('show')
+        })
+
+        $('#kirimemailapp').click(function () {
+            let to = $('#tujuanpesan').val();
+            let pesan = $('#kirimpesan').val();
+
+            $.ajax({
+                type: "POST",
+                url: "/send_message",
+                data: {
+                    to: to,
+                    pesan: pesan,
+                },
+                success: function (response) {
+                    console.log(response)
+                    if (response.result == "success") {
+                        Swal.fire("Success!", "your message has been sent!", "success").then((result) => { window.location.replace("/laporan-mahasiswa-ortu"); });
+                        window.location.reload()
+                    }
+                }
+            });
+        });
+
+    });
+</script>
+
+{% endblock %}

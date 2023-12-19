@@ -206,9 +206,20 @@ def savemhs():
         "id_ortu": idOrtu_receive,
         "fname_ortu": fnameortu_receive,
         "profile_pic": "",                                         
-        "profile_pic_real": "profile/2.jpg",
+        "profile_pic_real": "myassets/profile/2.jpg",
     }
+
+    docortu = {
+        "username": idOrtu_receive,
+        "password": password_hash,
+        "role": "orangtua",
+        "full_name": fnameortu_receive,
+        "profile_pic": "",                                         
+        "profile_pic_real": "myassets/profile/2.jpg",
+    }
+
     db.users.insert_one(doc)
+    db.users.insert_one(docortu)
     return jsonify({'result': 'success'})
 
 @app.route('/editmhs/<string:id>', methods=['GET', 'POST'])
@@ -657,7 +668,6 @@ def mhsabsensi():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
         user_info = db.users.find_one({"username": payload["id"]})
         nim_user = user_info['username']
-        nim_user1 = '1023744246'  # ganti dengan nim yang diinginkan
         pipeline = [
                     {"$match": {"nim": nim_user}},
                     {"$lookup": {
@@ -742,6 +752,250 @@ def viewabsenmhs(id):
             }
         ]))
         return render_template('mahasiswa/absensimhs.html', active_page="mnjm_absen", user_info=user_info, data=data, kls_mhs=kls_mhs, id=id)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/mahasiswa-absensi-ortu')
+def mhsabsensiortu():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({"username": payload["id"]})
+        nim_user = user_info['username']
+        nim_user = nim_user.replace("01", "", 1)
+        
+        pipeline = [
+                    {"$match": {"nim": nim_user}},
+                    {"$lookup": {
+                        "from": "kelas",
+                        "localField": "idKelas",
+                        "foreignField": "_id",
+                        "as": "kelas"
+                    }},
+                    {"$lookup": {
+                        "from": "users",
+                        "localField": "username",
+                        "foreignField": "username",
+                        "as": "user"
+                    }},
+                    {"$project": {
+                        "_id": 1,
+                        "nim" : 1,
+                        "kode_matkul": "$kelas.Kode_Matkul",
+                        "nama_matkul": "$kelas.Nama_Matkul",
+                        "waktu": "$kelas.Waktu",
+                        "ruang": "$kelas.Ruang",
+                        "dosen": "$user.full_name"
+                    }}
+        ]
+        data = list(db.kelas_mhs.aggregate(pipeline))
+
+        return render_template("orangtua/daftarmatkul.html", active_page='matkul_mhs', user_info=user_info, data=data)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/view-kelas-mahasiswa-ortu/<string:id>')
+def viewabsenmhsortu(id):
+    token_receive = request.cookies.get("mytoken")
+    try:
+        data = db.kelas.find_one({'_id': ObjectId(id)})
+        idc = ObjectId(id)
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        kls_mhs = list(db.kelas_mhs.aggregate([
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "nim",
+                    "foreignField": "username",
+                    "as": "info_mhs"
+                }
+            },
+            {
+                "$unwind": "$info_mhs"
+            },
+            {
+                "$match": {
+                    "_id": idc
+                }
+            },
+            {
+                "$project": {
+                    "_id": 1,
+                    "fullname": "$info_mhs.full_name", 
+                    "nim": "$info_mhs.username",
+                    "id_ortu": "$info_mhs.id_ortu",
+                    "fname_ortu": "$info_mhs.fname_ortu",
+                    "pertemuan": { "$concatArrays": [ 
+                        [{"status": "$pertemuan1"}], 
+                        [{"status": "$pertemuan2"}], 
+                        [{"status": "$pertemuan3"}], 
+                        [{"status": "$pertemuan4"}], 
+                        [{"status": "$pertemuan5"}], 
+                        [{"status": "$pertemuan6"}], 
+                        [{"status": "$pertemuan7"}], 
+                        [{"status": "$pertemuan8"}], 
+                        [{"status": "$pertemuan9"}], 
+                        [{"status": "$pertemuan10"}], 
+                        [{"status": "$pertemuan11"}], 
+                        [{"status": "$pertemuan12"}], 
+                        [{"status": "$pertemuan13"}], 
+                        [{"status": "$pertemuan14"}], 
+                        [{"status": "$pertemuan15"}], 
+                        [{"status": "$pertemuan16"}] 
+                    ]} 
+                }
+            }
+        ]))
+        return render_template('orangtua/absensimhs.html', active_page="mnjm_absen", user_info=user_info, data=data, kls_mhs=kls_mhs, id=id)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))
+
+@app.route('/laporan-mahasiswa')
+def lpmhs():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        username = payload["id"]
+        pipeline = [
+            {"$match": {"sender": username, "type": "sender"}},
+            {"$lookup": {
+                "from": "users",
+                "localField": "receiver",
+                "foreignField": "username",
+                "as": "myuser"
+            }},
+            {"$unwind": "$myuser"},
+            {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "receiver" : 1, "fullname":'$myuser.full_name'}}
+        ]
+        result = list(db.messages.aggregate(pipeline))
+        print(result)
+        return render_template("dosen/laporanmhs.html", active_page="laporan_mhs", active_page1="lpsent",user_info=user_info, messages=result)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))   
+
+@app.route('/laporan-mahasiswa-recive')
+def lpmhsrecive():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        username = payload["id"]
+        pipeline = [
+            {"$match": {"receiver": username}},
+            {"$lookup": {
+                "from": "users",
+                "localField": "sender",
+                "foreignField": "username",
+                "as": "myuser"
+            }},
+            {"$unwind": "$myuser"},
+            {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "sender" : 1}}
+        ]
+        result = list(db.messages.aggregate(pipeline))
+        print(result)
+        return render_template("dosen/laporanmhsrecive.html", active_page="laporan_mhs", active_page1="lpinbox", user_info=user_info, messages=result)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))   
+
+@app.route('/laporan-mahasiswa-ortu')
+def lpmhsortu():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        username = payload["id"]
+        twenty_four_hours_ago = datetime.now() - timedelta(days=1)
+        pipeline = [
+            {"$match": {"sender": username, "type": "sender"}},
+            {"$lookup": {
+                "from": "users",
+                "localField": "receiver",
+                "foreignField": "username",
+                "as": "myuser"
+            }},
+            {"$unwind": "$myuser"},
+            {"$project": {
+                "profile_pic_real": "$myuser.profile_pic_real", 
+                "_id": 0, 
+                "message":1, 
+                "receiver" : 1, 
+                "fullname":'$myuser.full_name',
+                "tanggal": {
+                    "$cond": [
+                        {"$lt": [{"$dateFromString": {"dateString": "$tanggal", "format": "%d/%m/%Y %H:%M:%S"}}, twenty_four_hours_ago]},
+                        {"$dateToString": {"format": "%d/%m/%Y", "date": {"$dateFromString": {"dateString": "$tanggal", "format": "%d/%m/%Y %H:%M:%S"}}}},
+                        {"$dateToString": {"format": "%H:%M", "date": {"$dateFromString": {"dateString": "$tanggal", "format": "%d/%m/%Y %H:%M:%S"}}}}
+                    ]
+                }
+            }}
+        ]
+
+
+        # pipeline = [
+        #     {"$match": {"sender": username, "type": "sender"}},
+        #     {"$lookup": {
+        #         "from": "users",
+        #         "localField": "receiver",
+        #         "foreignField": "username",
+        #         "as": "myuser"
+        #     }},
+        #     {"$unwind": "$myuser"},
+        #     {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "receiver" : 1, "fullname":'$myuser.full_name'}}
+        # ]
+        
+        result = list(db.messages.aggregate(pipeline))
+        return render_template("orangtua/laporanmhs.html", active_page="laporan_mhs", active_page1="lpsent",user_info=user_info, messages=result)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))   
+
+@app.route('/laporan-mahasiswa-recive-ortu')
+def lpmhsreciveortu():
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        user_info = db.users.find_one({'username':payload.get('id')})
+        username = payload["id"]
+        pipeline = [
+            {"$match": {"receiver": username}},
+            {"$lookup": {
+                "from": "users",
+                "localField": "sender",
+                "foreignField": "username",
+                "as": "myuser"
+            }},
+            {"$unwind": "$myuser"},
+            {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "sender" : 1}}
+        ]
+        result = list(db.messages.aggregate(pipeline))
+        print(result)
+        return render_template("orangtua/laporanmhsrecive.html", active_page="laporan_mhs", active_page1="lpinbox", user_info=user_info, messages=result)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        return redirect(url_for("home"))   
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+
+    token_receive = request.cookies.get("mytoken")
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=["HS256"])
+        username = payload["id"]
+        receiver = request.form["to"]
+        message = request.form["pesan"]
+        type = "sender"
+
+        users = db.users
+        if not users.find_one({"username": username}):
+            return "Pengirim tidak ditemukan"
+        if not users.find_one({"username": receiver}):
+            return "Penerima tidak ditemukan"
+        dt_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        messages = db.messages
+        messages.insert_one({"sender": username, "receiver": receiver, "message": message, "type": type, "tanggal" : dt_string})
+        return jsonify({"result": "success"})
+
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))
 

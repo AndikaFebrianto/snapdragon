@@ -116,6 +116,12 @@
                                 <span>Absensi Mahasiswa</span>
                             </a>
                         </li>
+                        <li class="sidebar-item {{ 'active' if active_page == 'laporan_mhs' else '' }}">
+                            <a href="/laporan-mahasiswa-recive" class='sidebar-link'>
+                                <i class="bi bi-archive"></i>
+                                <span>Laporan Mahasiswa</span>
+                            </a>
+                        </li>
                         {% endif %}
 
                         {% if user_role == 'mahasiswa' %}
@@ -123,6 +129,21 @@
                             <a href="/mahasiswa-absensi" class='sidebar-link'>
                                 <i class="bi bi-mortarboard"></i>
                                 <span>Absensi Saya</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% if user_role == 'orangtua' %}
+                        <li class="sidebar-item {{ 'active' if active_page == 'matkul_mhs' else '' }}">
+                            <a href="/mahasiswa-absensi-ortu" class='sidebar-link'>
+                                <i class="bi bi-mortarboard"></i>
+                                <span>Absensi Saya</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item {{ 'active' if active_page == 'laporan_mhs' else '' }}">
+                            <a href="/laporan-mahasiswa-recive-ortu" class='sidebar-link'>
+                                <i class="bi bi-archive"></i>
+                                <span>Laporan Dosen</span>
                             </a>
                         </li>
                         {% endif %}

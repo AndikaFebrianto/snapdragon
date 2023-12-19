@@ -43,7 +43,7 @@ Manajemen Dosen
                                     <td>
                                         <a href="editdosen/{{ user._id }}" class="btn icon btn-info"><i
                                                 class="fa-solid fa-pen-to-square text-white " title="edit"></i></a>
-                                        <button onclick="deletedosen('{{user[" _id"]}}')" class="btn icon btn-danger"><i
+                                        <button onclick="deletedosen('{{user["_id"]}}')" class="btn icon btn-danger"><i
                                                 class="fa-solid fa-trash" title="Hapus"></i></button>
                                     </td>
                                 </tr>
@@ -166,7 +166,6 @@ Manajemen Dosen
         $('#input-nip').val('');
         $('#fname').val('');
         $('#tl').val('');
-        // $('#tabeldosen').DataTable();
 
         $('#generate-nip').click(function () {
             var currentYear = new Date().getFullYear();
