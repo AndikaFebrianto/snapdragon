@@ -87,7 +87,6 @@ def dashboard():
         user_kls = db.kelas_mhs.count_documents({"username": user_info['username']})
         mhs_kls = db.kelas_mhs.count_documents({"nim": user_info['username']})
         role = user_info.get('role', 'user')
-        print(role)
         count_mahasiswa = db.users.count_documents({'role': 'mahasiswa'})
         count_dosen = db.users.count_documents({'role': 'dosen'})
         count_matkul = db.matakuliah.count_documents({})
@@ -870,7 +869,6 @@ def lpmhs():
             {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "receiver" : 1, "fullname":'$myuser.full_name'}}
         ]
         result = list(db.messages.aggregate(pipeline))
-        print(result)
         return render_template("dosen/laporanmhs.html", active_page="laporan_mhs", active_page1="lpsent",user_info=user_info, messages=result)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))   
@@ -894,7 +892,6 @@ def lpmhsrecive():
             {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "sender" : 1}}
         ]
         result = list(db.messages.aggregate(pipeline))
-        print(result)
         return render_template("dosen/laporanmhsrecive.html", active_page="laporan_mhs", active_page1="lpinbox", user_info=user_info, messages=result)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))   
@@ -931,19 +928,6 @@ def lpmhsortu():
                 }
             }}
         ]
-
-
-        # pipeline = [
-        #     {"$match": {"sender": username, "type": "sender"}},
-        #     {"$lookup": {
-        #         "from": "users",
-        #         "localField": "receiver",
-        #         "foreignField": "username",
-        #         "as": "myuser"
-        #     }},
-        #     {"$unwind": "$myuser"},
-        #     {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "receiver" : 1, "fullname":'$myuser.full_name'}}
-        # ]
         
         result = list(db.messages.aggregate(pipeline))
         return render_template("orangtua/laporanmhs.html", active_page="laporan_mhs", active_page1="lpsent",user_info=user_info, messages=result)
@@ -969,7 +953,6 @@ def lpmhsreciveortu():
             {"$project": {"profile_pic_real": "$myuser.profile_pic_real", "_id": 0, "message":1, "sender" : 1}}
         ]
         result = list(db.messages.aggregate(pipeline))
-        print(result)
         return render_template("orangtua/laporanmhsrecive.html", active_page="laporan_mhs", active_page1="lpinbox", user_info=user_info, messages=result)
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         return redirect(url_for("home"))   
